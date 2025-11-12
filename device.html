@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pressure Flow - Dispositivo</title>
+    <link rel="stylesheet" href="css/estilos.css">
+    <link rel="stylesheet" href="css/device.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-left">
+                <button id="menuToggle" class="menu-toggle">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <h1 id="deviceHeader">Nombre _ Dispositivo</h1>
+            </div>
+            <div class="header-right">
+                <div class="user-config">
+                    <i class="fas fa-user-cog"></i>
+                </div>
+                <div class="logo">
+                    <img src="https://via.placeholder.com/40x40/3498db/ffffff?text=PF" alt="Logo">
+                </div>
+            </div>
+        </header>
+
+        <div class="main-content">
+            <!-- Sidebar -->
+            <aside class="sidebar" id="sidebar">
+                <div class="sidebar-content">
+                    <h3>Menú</h3>
+                    <div class="filter-options">
+                        <a href="index.html" class="filter-option">
+                            <i class="fas fa-home"></i>
+                            <span>Home</span>
+                        </a>
+                        <div class="filter-option">
+                            <i class="fas fa-history"></i>
+                            <span>Historial</span>
+                        </div>
+                        <div class="filter-option">
+                            <i class="fas fa-tools"></i>
+                            <span>Reparaciones</span>
+                        </div>
+                    </div>
+                    
+                    <div class="separator"></div>
+                    
+                    <div class="settings-section">
+                        <h3>Ajustes</h3>
+                        <div class="settings-option">
+                            <i class="fas fa-cog"></i>
+                            <span>Configuración</span>
+                        </div>
+                        <div class="settings-option">
+                            <i class="fas fa-question-circle"></i>
+                            <span>Ayuda</span>
+                        </div>
+                    </div>
+                </div>
+            </aside>
+
+            <!-- Contenido principal -->
+            <main class="content" id="mainContent">
+                <div class="device-section">
+                    <h2 id="deviceTitle">Estatus del sistema de enfriado</h2>
+                    
+                    <div class="device-display">
+                        <div class="gauge-container">
+                            <div class="gauge">
+                                <div class="gauge-background"></div>
+                                <div class="gauge-needle" id="gaugeNeedle"></div>
+                                <div class="gauge-center"></div>
+                                <div class="gauge-value" id="gaugeValue">0 PSI</div>
+                            </div>
+                        </div>
+                        
+                        <div class="status-container">
+                            <div class="status-indicator" id="statusIndicator">
+                                <span id="statusText">Normal</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="device-info" id="deviceInfo">
+                        <!-- Información del dispositivo se cargará aquí -->
+                    </div>
+                    
+                    <!-- Sección de recomendaciones en dos columnas -->
+                    <div class="recommendations-section">
+                        <h3>Recomendaciones</h3>
+                        <div class="recommendations-grid">
+                            <ul class="recommendations-column">
+                                <li>Lorem ipsum dolor sit amet.</li>
+                                <li>Lorem ipsum dolor sit amet.</li>
+                                <li>Lorem ipsum dolor sit amet.</li>
+                            </ul>
+                            <ul class="recommendations-column">
+                                <li>Lorem ipsum dolor sit amet.</li>
+                                <li>Lorem ipsum dolor sit amet.</li>
+                                <li>Lorem ipsum dolor sit amet.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </main>
+
+            <!-- Panel de alertas -->
+            <aside class="alerts-panel">
+                <h2>Alertas</h2>
+                <div class="alerts-list" id="alertsList">
+                    <!-- Las alertas del dispositivo se cargarán aquí -->
+                </div>
+                <div class="history-message">
+                    Consulta el historial para más detalles.
+                </div>
+            </aside>
+        </div>
+
+        <div class="last-update" id="lastUpdate">
+            Última actualización: --
+        </div>
+    </div>
+
+    <script src="js/device.js"></script>
+</body>
+</html>

@@ -1,0 +1,309 @@
+/* Estilos específicos para la página de dispositivo */
+
+/* Header específico para device.html */
+#deviceHeader {
+    font-size: 24px;
+    font-weight: 600;
+}
+
+/* Contenido principal para device.html */
+.device-section {
+    background-color: rgba(255, 255, 255, 0.9);
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.device-section h2 {
+    color: #2c3e50;
+    font-size: 20px;
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #ecf0f1;
+    text-align: center;
+}
+
+.device-display {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    margin: 30px 0;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+
+/* Estilos del manómetro actualizado */
+.gauge-container {
+    width: 250px;
+    height: 250px;
+    position: relative;
+}
+
+.gauge {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    background: conic-gradient(
+        #e74c3c 0deg,        /* Falla Baja: 0-25 PSI */
+        #e74c3c 15.5deg,     /* 25/580 * 360 = 15.5° */
+        #FFD900 15.5deg,     /* Baja: 25-150 PSI */
+        #FFD900 93.1deg,     /* 150/580 * 360 = 93.1° */
+        #2ecc71 93.1deg,     /* Normal: 150-250 PSI */
+        #2ecc71 155.2deg,    /* 250/580 * 360 = 155.2° */
+        #FFD900 155.2deg,    /* Alta: 250-310 PSI */
+        #FFD900 192.4deg,    /* 310/580 * 360 = 192.4° */
+        #e74c3c 192.4deg,    /* Falla Alta: 310-580 PSI */
+        #e74c3c 360deg
+    );
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.gauge::before {
+    content: '';
+    position: absolute;
+    width: 80%;
+    height: 80%;
+    background: white;
+    border-radius: 50%;
+}
+
+.gauge-needle {
+    position: absolute;
+    width: 4px;
+    height: 45%;
+    background: #2c3e50;
+    bottom: 50%;
+    left: 50%;
+    transform-origin: bottom center;
+    transform: translateX(-50%) rotate(0deg);
+    transition: transform 1s ease-in-out;
+    z-index: 10;
+}
+
+.gauge-center {
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    background: #2c3e50;
+    border-radius: 50%;
+    z-index: 11;
+}
+
+.gauge-value {
+    position: absolute;
+    top: 65%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-weight: bold;
+    font-size: 18px;
+    color: #2c3e50;
+    z-index: 12;
+    text-align: center;
+    width: 100%;
+}
+
+/* Indicador de estatus actualizado */
+.status-container {
+    width: 200px;
+    height: 200px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.status-indicator {
+    width: 150px;
+    height: 150px;
+    border-radius: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: white;
+    font-size: 20px;
+    font-weight: bold;
+    text-align: center;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* Colores del indicador de estatus según los rangos del manómetro */
+.status-falla-baja, .status-falla-alta {
+    background-color: #e74c3c;
+}
+
+.status-baja, .status-alta {
+    background-color: #FFD900;
+    color: #333;
+}
+
+.status-normal {
+    background-color: #2ecc71;
+}
+
+/* Información del dispositivo */
+.device-info {
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    padding: 20px;
+    margin: 20px 0;
+}
+
+.device-info-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 8px 0;
+    border-bottom: 1px solid #ecf0f1;
+}
+
+.device-info-label {
+    font-weight: 600;
+    color: #2c3e50;
+}
+
+.device-info-value {
+    color: #7f8c8d;
+}
+
+/* Sección de recomendaciones en dos columnas */
+.recommendations-section {
+    margin-top: 30px;
+}
+
+.recommendations-section h3 {
+    color: #2c3e50;
+    margin-bottom: 15px;
+    font-size: 18px;
+}
+
+.recommendations-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+}
+
+.recommendations-column {
+    list-style-type: none;
+    padding-left: 0;
+}
+
+.recommendations-column li {
+    padding: 8px 0;
+    border-bottom: 1px solid #ecf0f1;
+    position: relative;
+    padding-left: 20px;
+}
+
+.recommendations-column li:before {
+    content: "•";
+    color: #3498db;
+    position: absolute;
+    left: 0;
+}
+
+/* Panel de alertas */
+.alerts-list {
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.alert-item {
+    padding: 15px;
+    border-radius: 8px;
+    margin-bottom: 15px;
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+}
+
+.alert-item.critical {
+    background-color: #ffebee;
+    border-left: 4px solid #e74c3c;
+}
+
+.alert-item.warning {
+    background-color: #fff8e1;
+    border-left: 4px solid #f39c12;
+}
+
+.alert-item.info {
+    background-color: #e3f2fd;
+    border-left: 4px solid #3498db;
+}
+
+.alert-icon {
+    font-size: 18px;
+    margin-top: 2px;
+}
+
+.alert-critical .alert-icon {
+    color: #e74c3c;
+}
+
+.alert-warning .alert-icon {
+    color: #f39c12;
+}
+
+.alert-info .alert-icon {
+    color: #3498db;
+}
+
+.alert-content {
+    flex: 1;
+}
+
+.alert-title {
+    font-weight: 600;
+    margin-bottom: 5px;
+}
+
+.alert-message {
+    font-size: 14px;
+    margin-bottom: 5px;
+}
+
+.alert-time {
+    font-size: 12px;
+    color: #7f8c8d;
+}
+
+.no-alerts {
+    text-align: center;
+    padding: 20px;
+    color: #7f8c8d;
+    font-style: italic;
+}
+
+/* Mensaje de historial */
+.history-message {
+    text-align: center;
+    color: #7f8c8d;
+    font-style: italic;
+    margin-top: 15px;
+    padding: 10px;
+    background-color: #f8f9fa;
+    border-radius: 5px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .device-display {
+        flex-direction: column;
+    }
+    
+    .gauge-container, .status-container {
+        width: 200px;
+        height: 200px;
+    }
+    
+    .status-indicator {
+        width: 120px;
+        height: 120px;
+        font-size: 16px;
+    }
+    
+    .recommendations-grid {
+        grid-template-columns: 1fr;
+    }
+}

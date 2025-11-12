@@ -1,3 +1,14 @@
+// Estado de la aplicación
+let currentCategory = "automotriz";
+let hiddenDevices = []; // Dispositivos ocultos
+let categoryHiddenState = {
+    automotriz: false,
+    domestico: false,
+    industrial: false,
+    refrigeracion: false,
+    todos: false
+};
+
 // Datos de ejemplo proporcionados
 const sensorData = [
     {
@@ -11,29 +22,137 @@ const sensorData = [
     },
     {
         "id": 2,
+        "device_id": "ESP32_001",
+        "sensor_type": "presion",
+        "value": 100.0,
+        "estatus": "Baja",
+        "created_at": "2025-11-11 16:21:45",
+        "categoria": "automotriz"
+    },
+    {
+        "id": 3,
+        "device_id": "ESP32_001",
+        "sensor_type": "presion",
+        "value": 167.0,
+        "estatus": "Normal",
+        "created_at": "2025-11-11 16:21:45",
+        "categoria": "automotriz"
+    },
+    {
+        "id": 4,
+        "device_id": "ESP32_001",
+        "sensor_type": "presion",
+        "value": 50.0,
+        "estatus": "Baja",
+        "created_at": "2025-11-11 16:21:45",
+        "categoria": "automotriz"
+    },
+    {
+        "id": 1,
         "device_id": "ESP32_002",
         "sensor_type": "presion",
-        "value": 155.8,
+        "value": 70.0,
+        "estatus": "Baja",
+        "created_at": "2025-11-11 16:21:45",
+        "categoria": "domestico"
+    },
+    {
+        "id": 2,
+        "device_id": "ESP32_002",
+        "sensor_type": "presion",
+        "value": 100.0,
+        "estatus": "Baja",
+        "created_at": "2025-11-11 16:21:45",
+        "categoria": "domestico"
+    },
+    {
+        "id": 3,
+        "device_id": "ESP32_002",
+        "sensor_type": "presion",
+        "value": 167.0,
         "estatus": "Normal",
-        "created_at": "2025-11-11 16:22:45",
+        "created_at": "2025-11-11 16:21:45",
+        "categoria": "domestico"
+    },
+    {
+        "id": 4,
+        "device_id": "ESP32_002",
+        "sensor_type": "presion",
+        "value": 180.5,
+        "estatus": "Normal",
+        "created_at": "2025-11-11 16:21:45",
+        "categoria": "domestico"
+    },
+    {
+        "id": 1,
+        "device_id": "ESP32_003",
+        "sensor_type": "presion",
+        "value": 70.0,
+        "estatus": "Baja",
+        "created_at": "2025-11-11 16:21:45",
+        "categoria": "industrial"
+    },
+    {
+        "id": 2,
+        "device_id": "ESP32_003",
+        "sensor_type": "presion",
+        "value": 100.0,
+        "estatus": "Baja",
+        "created_at": "2025-11-11 16:21:45",
         "categoria": "industrial"
     },
     {
         "id": 3,
         "device_id": "ESP32_003",
         "sensor_type": "presion",
-        "value": 305.6,
+        "value": 167.0,
+        "estatus": "Normal",
+        "created_at": "2025-11-11 16:21:45",
+        "categoria": "industrial"
+    },
+    {
+        "id": 4,
+        "device_id": "ESP32_003",
+        "sensor_type": "presion",
+        "value": 300.7,
         "estatus": "Alta",
-        "created_at": "2025-11-11 16:23:45",
-        "categoria": "domestico"
+        "created_at": "2025-11-11 16:21:45",
+        "categoria": "industrial"
+    },
+    {
+        "id": 1,
+        "device_id": "ESP32_004",
+        "sensor_type": "presion",
+        "value": 70.0,
+        "estatus": "Baja",
+        "created_at": "2025-11-11 16:21:45",
+        "categoria": "refrigeracion"
+    },
+    {
+        "id": 2,
+        "device_id": "ESP32_004",
+        "sensor_type": "presion",
+        "value": 100.0,
+        "estatus": "Baja",
+        "created_at": "2025-11-11 16:21:45",
+        "categoria": "refrigeracion"
+    },
+    {
+        "id": 3,
+        "device_id": "ESP32_004",
+        "sensor_type": "presion",
+        "value": 167.0,
+        "estatus": "Normal",
+        "created_at": "2025-11-11 16:21:45",
+        "categoria": "refrigeracion"
     },
     {
         "id": 4,
         "device_id": "ESP32_004",
         "sensor_type": "presion",
-        "value": 18.3,
+        "value": 15.2,
         "estatus": "Falla Baja",
-        "created_at": "2025-11-11 16:24:45",
+        "created_at": "2025-11-11 16:21:45",
         "categoria": "refrigeracion"
     }
 ];
@@ -63,10 +182,6 @@ const alertData = [
     }
 ];
 
-// Estado de la aplicación
-let currentCategory = "automotriz";
-let hiddenDevices = []; // Dispositivos ocultos
-
 // Función para obtener la clase CSS según el estado
 function getStatusClass(estatus) {
     const statusMap = {
@@ -90,12 +205,35 @@ function getCategoryName(category) {
     return categoryMap[category] || category;
 }
 
+// Función para obtener el último estado de cada dispositivo (solo el de ID mayor)
+function getLatestDeviceStatus() {
+    const deviceMap = new Map();
+    
+    // Ordenar por ID descendente (mayor ID primero)
+    const sortedData = [...sensorData].sort((a, b) => b.id - a.id);
+    
+    // Tomar solo el primer registro (mayor ID) de cada device_id
+    sortedData.forEach(device => {
+        if (!deviceMap.has(device.device_id)) {
+            deviceMap.set(device.device_id, device);
+        }
+    });
+    
+    return Array.from(deviceMap.values());
+}
+
 // Función para filtrar dispositivos por categoría
 function filterDevicesByCategory(category) {
     if (category === "todos") {
-        return sensorData.filter(device => !hiddenDevices.includes(device.device_id));
+        // Si la categoría "todos" está oculta, no mostrar nada
+        if (categoryHiddenState.todos) return [];
+        return getLatestDeviceStatus().filter(device => !hiddenDevices.includes(device.device_id));
     }
-    return sensorData.filter(device => 
+    
+    // Si la categoría actual está oculta, no mostrar nada
+    if (categoryHiddenState[category]) return [];
+    
+    return getLatestDeviceStatus().filter(device => 
         device.categoria === category && !hiddenDevices.includes(device.device_id)
     );
 }
@@ -130,17 +268,70 @@ function renderDevices() {
     filteredDevices.forEach(device => {
         const sensorCard = document.createElement('div');
         sensorCard.className = 'sensor-card';
+        // Añadir cursor pointer para indicar que es clickable
+        sensorCard.style.cursor = 'pointer';
         
         const statusClass = getStatusClass(device.estatus);
         
         sensorCard.innerHTML = `
             <div class="sensor-name">
                 ${device.device_id}
-                <span class="sensor-options"><i class="fas fa-ellipsis-v"></i></span>
+                <div class="sensor-options">
+                    <i class="fas fa-ellipsis-v"></i>
+                    <div class="options-menu">
+                        <div class="option-item" data-action="info" data-device-id="${device.device_id}">
+                            <i class="fas fa-info-circle"></i> Info
+                        </div>
+                        <div class="option-item" data-action="hide" data-device-id="${device.device_id}">
+                            <i class="fas fa-eye-slash"></i> Ocultar
+                        </div>
+                    </div>
+                </div>
             </div>
             <div class="sensor-value">${device.value}</div>
             <div class="sensor-status ${statusClass}">${device.estatus}</div>
         `;
+        
+        // Añadir event listener para redirigir a device.html al hacer clic en la tarjeta
+        sensorCard.addEventListener('click', function(e) {
+            // Evitar la redirección si se hizo clic en el menú de opciones
+            if (!e.target.closest('.sensor-options')) {
+                window.location.href = `device.html?device_id=${device.device_id}`;
+            }
+        });
+        
+        // Añadir event listeners para el menú de opciones
+        const optionsMenu = sensorCard.querySelector('.options-menu');
+        const optionsTrigger = sensorCard.querySelector('.sensor-options');
+        
+        optionsTrigger.addEventListener('click', function(e) {
+            e.stopPropagation(); // Evitar que el clic se propague a la tarjeta (y así evitar redirección)
+            // Alternar la visibilidad del menú
+            optionsMenu.style.display = optionsMenu.style.display === 'block' ? 'none' : 'block';
+        });
+        
+        // Cerrar el menú si se hace clic en otra parte
+        document.addEventListener('click', function() {
+            optionsMenu.style.display = 'none';
+        });
+        
+        // Manejar las opciones del menú
+        sensorCard.querySelectorAll('.option-item').forEach(option => {
+            option.addEventListener('click', function(e) {
+                e.stopPropagation(); // Evitar que el clic se propague a la tarjeta
+                const action = this.dataset.action;
+                const deviceId = this.dataset.deviceId;
+                
+                if (action === 'info') {
+                    showDeviceInfo(deviceId);
+                } else if (action === 'hide') {
+                    hideSingleDevice(deviceId);
+                }
+                
+                // Ocultar el menú después de la acción
+                optionsMenu.style.display = 'none';
+            });
+        });
         
         sensorGrid.appendChild(sensorCard);
     });
@@ -149,6 +340,89 @@ function renderDevices() {
     const now = new Date();
     const lastUpdateElement = document.getElementById('lastUpdate');
     lastUpdateElement.textContent = `Última actualización: ${now.toLocaleTimeString()}`;
+}
+
+// Función para mostrar información del dispositivo en un modal
+function showDeviceInfo(deviceId) {
+    const device = getLatestDeviceStatus().find(d => d.device_id === deviceId);
+    if (!device) return;
+    
+    // Crear modal de información si no existe
+    let infoModal = document.getElementById('deviceInfoModal');
+    if (!infoModal) {
+        infoModal = document.createElement('div');
+        infoModal.id = 'deviceInfoModal';
+        infoModal.className = 'modal';
+        infoModal.innerHTML = `
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3>Información del Dispositivo</h3>
+                    <span class="close">&times;</span>
+                </div>
+                <div class="modal-body">
+                    <div class="device-info-details" id="deviceInfoDetails"></div>
+                </div>
+            </div>
+        `;
+        document.body.appendChild(infoModal);
+        
+        // Añadir funcionalidad para cerrar el modal
+        const closeBtn = infoModal.querySelector('.close');
+        closeBtn.addEventListener('click', function() {
+            infoModal.style.display = 'none';
+        });
+        
+        // Cerrar modal al hacer clic fuera
+        window.addEventListener('click', function(event) {
+            if (event.target === infoModal) {
+                infoModal.style.display = 'none';
+            }
+        });
+    }
+    
+    const details = document.getElementById('deviceInfoDetails');
+    
+    // Formatear la fecha
+    const date = new Date(device.created_at);
+    const formattedDate = `${date.getFullYear()},${(date.getMonth() + 1).toString().padStart(2, '0')},${date.getDate().toString().padStart(2, '0')}`;
+    
+    details.innerHTML = `
+        <div class="info-row">
+            <span class="info-label">Device ID:</span>
+            <span class="info-value">${device.device_id}</span>
+        </div>
+        <div class="info-row">
+            <span class="info-label">Tipo de Sensor:</span>
+            <span class="info-value">${device.sensor_type}</span>
+        </div>
+        <div class="info-row">
+            <span class="info-label">Última Medición:</span>
+            <span class="info-value">${device.value}</span>
+        </div>
+        <div class="info-row">
+            <span class="info-label">Estatus:</span>
+            <span class="info-value">${device.estatus}</span>
+        </div>
+        <div class="info-row">
+            <span class="info-label">Último Registro:</span>
+            <span class="info-value">${formattedDate}</span>
+        </div>
+        <div class="info-row">
+            <span class="info-label">Categoría:</span>
+            <span class="info-value">${getCategoryName(device.categoria)}</span>
+        </div>
+    `;
+    
+    infoModal.style.display = 'block';
+}
+
+// Función para ocultar un dispositivo individual
+function hideSingleDevice(deviceId) {
+    if (!hiddenDevices.includes(deviceId)) {
+        hiddenDevices.push(deviceId);
+    }
+    renderDevices();
+    updateAddButton();
 }
 
 // Función para renderizar las alertas
@@ -185,7 +459,7 @@ function renderAvailableDevices() {
     availableDevicesContainer.innerHTML = '';
     
     // Filtrar dispositivos que están ocultos y son de la categoría actual
-    const devicesToShow = sensorData.filter(device => 
+    const devicesToShow = getLatestDeviceStatus().filter(device => 
         hiddenDevices.includes(device.device_id) && 
         (currentCategory === 'todos' || device.categoria === currentCategory)
     );
@@ -211,87 +485,85 @@ function renderAvailableDevices() {
         `;
         
         deviceElement.addEventListener('click', function() {
-            showDevice(device.device_id);
+            showSingleDevice(device.device_id);
         });
         
         availableDevicesContainer.appendChild(deviceElement);
     });
 }
 
-// Función para mostrar un dispositivo (quitar de la lista de ocultos)
-function showDevice(deviceId) {
+// Función para mostrar un dispositivo individual
+function showSingleDevice(deviceId) {
     hiddenDevices = hiddenDevices.filter(id => id !== deviceId);
-    
-    // Cerrar modal y actualizar la vista
     closeModal('addDeviceModal');
     renderDevices();
-    renderAvailableDevices();
-    renderDevicesToHide();
+    updateAddButton();
+    updateHideButton();
 }
 
-// Función para renderizar dispositivos a ocultar
-function renderDevicesToHide() {
-    const devicesToHideContainer = document.getElementById('devicesToHide');
-    devicesToHideContainer.innerHTML = '';
+// Función para mostrar todos los dispositivos de la categoría actual
+function showAllDevices() {
+    // Mostrar todos los dispositivos de la categoría actual
+    getLatestDeviceStatus().forEach(device => {
+        if (currentCategory === 'todos' || device.categoria === currentCategory) {
+            hiddenDevices = hiddenDevices.filter(id => id !== device.device_id);
+        }
+    });
+    closeModal('addDeviceModal');
+    renderDevices();
+    updateAddButton();
+    updateHideButton();
+}
+
+// Función para alternar el estado de ocultar/mostrar todos los dispositivos de la categoría actual
+function toggleHideAllDevices() {
+    const hideButton = document.getElementById('hideDeviceBtn');
     
-    // Filtrar dispositivos visibles de la categoría actual
-    const devicesToShow = sensorData.filter(device => 
-        !hiddenDevices.includes(device.device_id) && 
+    // Alternar el estado de la categoría actual
+    categoryHiddenState[currentCategory] = !categoryHiddenState[currentCategory];
+    
+    if (categoryHiddenState[currentCategory]) {
+        // Ocultar todos los dispositivos de la categoría actual
+        hideButton.innerHTML = '<i class="fas fa-eye"></i> Mostrar Dispositivos';
+        hideButton.classList.add('hidden');
+    } else {
+        // Mostrar todos los dispositivos de la categoría actual
+        hideButton.innerHTML = '<i class="fas fa-eye-slash"></i> Ocultar Dispositivos';
+        hideButton.classList.remove('hidden');
+    }
+    
+    renderDevices();
+    updateAddButton();
+}
+
+// Función para actualizar el estado del botón de añadir
+function updateAddButton() {
+    const addButton = document.getElementById('addDeviceBtn');
+    
+    // Verificar si hay dispositivos ocultos en la categoría actual
+    const hiddenDevicesInCategory = getLatestDeviceStatus().filter(device => 
+        hiddenDevices.includes(device.device_id) && 
         (currentCategory === 'todos' || device.categoria === currentCategory)
     );
     
-    if (devicesToShow.length === 0) {
-        devicesToHideContainer.innerHTML = '<div class="no-devices">No hay dispositivos para ocultar</div>';
-        return;
+    if (hiddenDevicesInCategory.length === 0 || categoryHiddenState[currentCategory]) {
+        addButton.disabled = true;
+    } else {
+        addButton.disabled = false;
     }
-    
-    devicesToShow.forEach(device => {
-        const deviceElement = document.createElement('div');
-        deviceElement.className = 'device-to-hide';
-        
-        deviceElement.innerHTML = `
-            <label>
-                <input type="checkbox" class="device-checkbox" value="${device.device_id}">
-                ${device.device_id} (${getCategoryName(device.categoria)})
-            </label>
-        `;
-        
-        devicesToHideContainer.appendChild(deviceElement);
-    });
 }
 
-// Función para ocultar dispositivos seleccionados
-function hideSelectedDevices() {
-    const hideAllCheckbox = document.getElementById('hideAllCheckbox');
+// Función para actualizar el estado del botón de ocultar
+function updateHideButton() {
+    const hideButton = document.getElementById('hideDeviceBtn');
     
-    if (hideAllCheckbox.checked) {
-        // Ocultar todos los dispositivos de la categoría actual
-        if (currentCategory === 'todos') {
-            hiddenDevices = [...new Set([...hiddenDevices, ...sensorData.map(device => device.device_id)])];
-        } else {
-            sensorData.forEach(device => {
-                if (device.categoria === currentCategory) {
-                    hiddenDevices.push(device.device_id);
-                }
-            });
-            // Eliminar duplicados
-            hiddenDevices = [...new Set(hiddenDevices)];
-        }
+    if (categoryHiddenState[currentCategory]) {
+        hideButton.innerHTML = '<i class="fas fa-eye"></i> Mostrar Dispositivos';
+        hideButton.classList.add('hidden');
     } else {
-        // Ocultar solo los dispositivos seleccionados
-        const checkboxes = document.querySelectorAll('.device-checkbox:checked');
-        checkboxes.forEach(checkbox => {
-            hiddenDevices.push(checkbox.value);
-        });
-        // Eliminar duplicados
-        hiddenDevices = [...new Set(hiddenDevices)];
+        hideButton.innerHTML = '<i class="fas fa-eye-slash"></i> Ocultar Dispositivos';
+        hideButton.classList.remove('hidden');
     }
-    
-    // Cerrar modal y actualizar la vista
-    closeModal('hideDeviceModal');
-    renderDevices();
-    renderAvailableDevices();
-    renderDevicesToHide();
 }
 
 // Función para cambiar la categoría activa
@@ -311,10 +583,12 @@ function setActiveCategory(category) {
     // Actualizar el fondo
     updateBackground(category);
     
+    // Actualizar los botones
+    updateAddButton();
+    updateHideButton();
+    
     // Renderizar los dispositivos con el nuevo filtro
     renderDevices();
-    renderAvailableDevices();
-    renderDevicesToHide();
 }
 
 // Funciones para el modal
@@ -324,10 +598,6 @@ function openModal(modalId) {
     
     if (modalId === 'addDeviceModal') {
         renderAvailableDevices();
-    } else if (modalId === 'hideDeviceModal') {
-        renderDevicesToHide();
-        // Resetear el checkbox de ocultar todos
-        document.getElementById('hideAllCheckbox').checked = false;
     }
 }
 
@@ -350,7 +620,8 @@ document.addEventListener('DOMContentLoaded', function() {
     updateBackground(currentCategory);
     renderDevices();
     renderAlerts();
-    renderDevicesToHide();
+    updateAddButton();
+    updateHideButton();
     
     // Configurar la actualización automática cada 30 segundos
     setInterval(simulateDataUpdate, 30000);
@@ -376,9 +647,13 @@ document.addEventListener('DOMContentLoaded', function() {
     const addDeviceBtn = document.getElementById('addDeviceBtn');
     addDeviceBtn.addEventListener('click', () => openModal('addDeviceModal'));
     
-    // Manejar el botón de ocultar dispositivo
+    // Manejar el botón de añadir todos
+    const addAllBtn = document.getElementById('addAllBtn');
+    addAllBtn.addEventListener('click', showAllDevices);
+    
+    // Manejar el botón de ocultar/mostrar dispositivo
     const hideDeviceBtn = document.getElementById('hideDeviceBtn');
-    hideDeviceBtn.addEventListener('click', () => openModal('hideDeviceModal'));
+    hideDeviceBtn.addEventListener('click', toggleHideAllDevices);
     
     // Manejar el cierre de modales
     const closeButtons = document.querySelectorAll('.close');
@@ -388,10 +663,6 @@ document.addEventListener('DOMContentLoaded', function() {
             modal.style.display = 'none';
         });
     });
-    
-    // Confirmar ocultar dispositivos
-    const confirmHideBtn = document.getElementById('confirmHideBtn');
-    confirmHideBtn.addEventListener('click', hideSelectedDevices);
     
     // Cerrar modal al hacer clic fuera de él
     window.addEventListener('click', function(event) {
