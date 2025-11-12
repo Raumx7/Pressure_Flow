@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pressure Flow</title>
+    <link rel="stylesheet" href="css/estilos.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-left">
+                <button id="menuToggle" class="menu-toggle">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <h1>Pressure Flow</h1>
+            </div>
+            <div class="header-right">
+                <div class="user-config">
+                    <i class="fas fa-user-cog"></i>
+                </div>
+                <div class="logo">
+                    <img src="https://via.placeholder.com/40x40/3498db/ffffff?text=PF" alt="Logo">
+                </div>
+            </div>
+        </header>
+
+        <div class="main-content">
+            <!-- Sidebar -->
+            <aside class="sidebar" id="sidebar">
+                <div class="sidebar-content">
+                    <h3>Filtrar por Categoría</h3>
+                    <div class="filter-options">
+                        <div class="filter-option active" data-category="automotriz">
+                            <i class="fas fa-car"></i>
+                            <span>Automotriz</span>
+                        </div>
+                        <div class="filter-option" data-category="domestico">
+                            <i class="fas fa-home"></i>
+                            <span>Doméstico</span>
+                        </div>
+                        <div class="filter-option" data-category="industrial">
+                            <i class="fas fa-industry"></i>
+                            <span>Industrial</span>
+                        </div>
+                        <div class="filter-option" data-category="refrigeracion">
+                            <i class="fas fa-snowflake"></i>
+                            <span>Refrigeración</span>
+                        </div>
+                        <div class="filter-option" data-category="todos">
+                            <i class="fas fa-th"></i>
+                            <span>Todos</span>
+                        </div>
+                    </div>
+                    
+                    <div class="separator"></div>
+                    
+                    <div class="settings-section">
+                        <h3>Ajustes</h3>
+                        <div class="settings-option">
+                            <i class="fas fa-cog"></i>
+                            <span>Configuración</span>
+                        </div>
+                        <div class="settings-option">
+                            <i class="fas fa-question-circle"></i>
+                            <span>Ayuda</span>
+                        </div>
+                    </div>
+                </div>
+            </aside>
+
+            <!-- Contenido principal -->
+            <main class="content" id="mainContent">
+                <div class="sensors-section">
+                    <div class="section-header">
+                        <h2>Mis Dispositivos</h2>
+                        <div class="button-group">
+                            <button id="addDeviceBtn" class="add-device-btn">
+                                <i class="fas fa-plus"></i> Añadir Dispositivo
+                            </button>
+                            <button id="hideDeviceBtn" class="hide-device-btn">
+                                <i class="fas fa-eye-slash"></i> Ocultar Dispositivos
+                            </button>
+                        </div>
+                    </div>
+                    <div class="sensor-grid" id="sensorGrid">
+                        <!-- Los dispositivos se cargarán aquí dinámicamente -->
+                    </div>
+                </div>
+            </main>
+
+            <!-- Panel de alertas -->
+            <aside class="alerts-panel">
+                <h2>Alertas</h2>
+                <div class="alerts-list" id="alertsList">
+                    <!-- Las alertas se cargarán aquí dinámicamente -->
+                </div>
+            </aside>
+        </div>
+
+        <div class="last-update" id="lastUpdate">
+            Última actualización: --
+        </div>
+    </div>
+
+    <!-- Modal para añadir dispositivos -->
+    <div id="addDeviceModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Añadir Dispositivo</h3>
+                <span class="close">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div class="available-devices" id="availableDevices">
+                    <!-- Lista de dispositivos disponibles -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para ocultar dispositivos -->
+    <div id="hideDeviceModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Ocultar Dispositivos</h3>
+                <span class="close">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div class="hide-options">
+                    <label class="option-item">
+                        <input type="checkbox" id="hideAllCheckbox">
+                        <span>Ocultar todos los dispositivos</span>
+                    </label>
+                </div>
+                <div class="devices-to-hide" id="devicesToHide">
+                    <!-- Lista de dispositivos a ocultar -->
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button id="confirmHideBtn" class="confirm-btn">Confirmar</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/script.js"></script>
+</body>
+</html>
