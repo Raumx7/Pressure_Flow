@@ -3,10 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pressure Flow - Dispositivo</title>
+    <title>Pressure Flow - Historial</title>
     <link rel="stylesheet" href="css/estilos.css">
-    <link rel="stylesheet" href="css/device.css">
+    <link rel="stylesheet" href="css/historial.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
     <div class="container">
@@ -16,7 +17,7 @@
                 <button id="menuToggle" class="menu-toggle">
                     <i class="fas fa-bars"></i>
                 </button>
-                <h1 id="deviceHeader">Nombre _ Dispositivo</h1>
+                <h1>Pressure Flow - Historial</h1>
             </div>
             <div class="header-right">
                 <div class="user-config">
@@ -38,10 +39,10 @@
                             <i class="fas fa-home"></i>
                             <span>Home</span>
                         </a>
-                        <a href="historial.html" class="filter-option" id="historialLink">
+                        <div class="filter-option active">
                             <i class="fas fa-history"></i>
                             <span>Historial</span>
-                        </a>
+                        </div>
                         <a href="reparaciones.html" class="filter-option">
                             <i class="fas fa-tools"></i>
                             <span>Reparaciones</span>
@@ -73,57 +74,61 @@
 
             <!-- Contenido principal -->
             <main class="content" id="mainContent">
-                <div class="device-section">
-                    <h2 id="deviceTitle">Estatus del sistema de enfriado</h2>
+                <div class="historial-section">
+                    <h2>Historial de Presiones</h2>
                     
-                    <div class="device-display">
-                        <div class="gauge-container">
-                            <div class="gauge">
-                                <div class="gauge-background"></div>
-                                <div class="gauge-needle" id="gaugeNeedle"></div>
-                                <div class="gauge-center"></div>
-                                <div class="gauge-value" id="gaugeValue">0 PSI</div>
-                            </div>
-                        </div>
-                        
-                        <div class="status-container">
-                            <div class="status-indicator" id="statusIndicator">
-                                <span id="statusText">Normal</span>
-                            </div>
-                        </div>
+                    <!-- Controles de la gráfica -->
+                    <div class="chart-controls">
+                        <button id="filterBtn" class="control-btn">
+                            <i class="fas fa-filter"></i> Filtrar
+                        </button>
+                        <button id="trendlineBtn" class="control-btn">
+                            <i class="fas fa-chart-line"></i> Ajustar Línea de Tendencia
+                        </button>
                     </div>
                     
-                    <div class="device-info" id="deviceInfo">
-                        <!-- Información del dispositivo se cargará aquí -->
+                    <!-- Gráfica -->
+                    <div class="chart-container">
+                        <canvas id="pressureChart"></canvas>
                     </div>
                     
-                    <!-- Sección de recomendaciones en dos columnas -->
-                    <div class="recommendations-section">
-                        <h3>Recomendaciones</h3>
-                        <div class="recommendations-grid">
-                            <ul class="recommendations-column">
-                                <li>Verificar presión regularmente</li>
-                                <li>Mantener dentro de rangos normales</li>
-                                <li>Revisar conexiones y sellos</li>
-                            </ul>
-                            <ul class="recommendations-column">
-                                <li>Calibrar sensores periódicamente</li>
-                                <li>Reportar fallas inmediatamente</li>
-                                <li>Realizar mantenimiento preventivo</li>
-                            </ul>
+                    <!-- Tabla de datos -->
+                    <div class="table-section">
+                        <h3>Registros de Presión</h3>
+                        <div class="table-container">
+                            <table id="pressureTable">
+                                <thead>
+                                    <tr>
+                                        <th>Lectura</th>
+                                        <th>Presión (PSI)</th>
+                                        <th>Estatus</th>
+                                        <th>Fecha</th>
+                                        <th>Hora</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="pressureTableBody">
+                                    <!-- Los datos se cargarán aquí dinámicamente -->
+                                </tbody>
+                            </table>
                         </div>
                     </div>
                 </div>
             </main>
 
-            <!-- Panel de alertas -->
+            <!-- Panel de recomendaciones -->
             <aside class="alerts-panel">
-                <h2>Alertas</h2>
-                <div class="alerts-list" id="alertsList">
-                    <!-- Las alertas del dispositivo se cargarán aquí -->
-                </div>
-                <div class="history-message">
-                    Consulta el historial para más detalles.
+                <h2>Recomendaciones</h2>
+                <div class="recommendations-grid">
+                    <ul class="recommendations-column">
+                        <li>Verificar tendencias de presión anormales</li>
+                        <li>Revisar sellos y conexiones</li>
+                        <li>Calibrar sensores periódicamente</li>
+                    </ul>
+                    <ul class="recommendations-column">
+                        <li>Mantener presión dentro de rangos normales</li>
+                        <li>Documentar eventos de falla</li>
+                        <li>Programar mantenimiento preventivo</li>
+                    </ul>
                 </div>
             </aside>
         </div>
@@ -133,6 +138,6 @@
         </div>
     </div>
 
-    <script src="js/device.js"></script>
+    <script src="js/historial.js"></script>
 </body>
 </html>

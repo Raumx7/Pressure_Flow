@@ -1,0 +1,97 @@
+/* Estilos específicos para la página de reparaciones */
+
+.reparaciones-section {
+    background-color: rgba(255, 255, 255, 0.9);
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.reparaciones-section h2 {
+    color: #2c3e50;
+    font-size: 20px;
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #ecf0f1;
+}
+
+.map-container {
+    height: 500px;
+    border-radius: 8px;
+    overflow: hidden;
+    background-color: #f8f9fa;
+    border: 1px solid #ecf0f1;
+}
+
+.map-placeholder {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    color: #7f8c8d;
+    text-align: center;
+}
+
+.map-placeholder i {
+    font-size: 48px;
+    margin-bottom: 15px;
+    color: #3498db;
+}
+
+.map-placeholder p {
+    font-size: 18px;
+    margin-bottom: 10px;
+    font-weight: 600;
+}
+
+.map-placeholder small {
+    font-size: 14px;
+    max-width: 80%;
+}
+
+/* Estilos para la lista de contactos */
+.contact-list {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.contact-item {
+    background-color: #f8f9fa;
+    padding: 15px;
+    border-radius: 8px;
+    border-left: 4px solid #3498db;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.contact-item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.contact-item h3 {
+    color: #2c3e50;
+    margin-bottom: 10px;
+    font-size: 16px;
+}
+
+.contact-item p {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 8px 0;
+    color: #7f8c8d;
+}
+
+.contact-item i {
+    color: #3498db;
+    width: 20px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .map-container {
+        height: 300px;
+    }
+}

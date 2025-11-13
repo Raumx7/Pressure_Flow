@@ -1,14 +1,3 @@
-// Estado de la aplicación
-let currentCategory = "automotriz";
-let hiddenDevices = []; // Dispositivos ocultos
-let categoryHiddenState = {
-    automotriz: false,
-    domestico: false,
-    industrial: false,
-    refrigeracion: false,
-    todos: false
-};
-
 // Datos de ejemplo proporcionados
 const sensorData = [
     {
@@ -26,7 +15,7 @@ const sensorData = [
         "sensor_type": "presion",
         "value": 100.0,
         "estatus": "Baja",
-        "created_at": "2025-11-11 16:21:45",
+        "created_at": "2025-11-11 16:22:45",
         "categoria": "automotriz"
     },
     {
@@ -35,7 +24,7 @@ const sensorData = [
         "sensor_type": "presion",
         "value": 167.0,
         "estatus": "Normal",
-        "created_at": "2025-11-11 16:21:45",
+        "created_at": "2025-11-11 16:23:45",
         "categoria": "automotriz"
     },
     {
@@ -44,7 +33,7 @@ const sensorData = [
         "sensor_type": "presion",
         "value": 50.0,
         "estatus": "Baja",
-        "created_at": "2025-11-11 16:21:45",
+        "created_at": "2025-11-11 16:24:45",
         "categoria": "automotriz"
     },
     {
@@ -62,7 +51,7 @@ const sensorData = [
         "sensor_type": "presion",
         "value": 100.0,
         "estatus": "Baja",
-        "created_at": "2025-11-11 16:21:45",
+        "created_at": "2025-11-11 16:22:45",
         "categoria": "domestico"
     },
     {
@@ -71,7 +60,7 @@ const sensorData = [
         "sensor_type": "presion",
         "value": 167.0,
         "estatus": "Normal",
-        "created_at": "2025-11-11 16:21:45",
+        "created_at": "2025-11-11 16:23:45",
         "categoria": "domestico"
     },
     {
@@ -80,7 +69,7 @@ const sensorData = [
         "sensor_type": "presion",
         "value": 180.5,
         "estatus": "Normal",
-        "created_at": "2025-11-11 16:21:45",
+        "created_at": "2025-11-11 16:24:45",
         "categoria": "domestico"
     },
     {
@@ -98,7 +87,7 @@ const sensorData = [
         "sensor_type": "presion",
         "value": 100.0,
         "estatus": "Baja",
-        "created_at": "2025-11-11 16:21:45",
+        "created_at": "2025-11-11 16:22:45",
         "categoria": "industrial"
     },
     {
@@ -107,7 +96,7 @@ const sensorData = [
         "sensor_type": "presion",
         "value": 167.0,
         "estatus": "Normal",
-        "created_at": "2025-11-11 16:21:45",
+        "created_at": "2025-11-11 16:23:45",
         "categoria": "industrial"
     },
     {
@@ -116,7 +105,7 @@ const sensorData = [
         "sensor_type": "presion",
         "value": 300.7,
         "estatus": "Alta",
-        "created_at": "2025-11-11 16:21:45",
+        "created_at": "2025-11-11 16:24:45",
         "categoria": "industrial"
     },
     {
@@ -134,7 +123,7 @@ const sensorData = [
         "sensor_type": "presion",
         "value": 100.0,
         "estatus": "Baja",
-        "created_at": "2025-11-11 16:21:45",
+        "created_at": "2025-11-11 16:22:45",
         "categoria": "refrigeracion"
     },
     {
@@ -143,7 +132,7 @@ const sensorData = [
         "sensor_type": "presion",
         "value": 167.0,
         "estatus": "Normal",
-        "created_at": "2025-11-11 16:21:45",
+        "created_at": "2025-11-11 16:23:45",
         "categoria": "refrigeracion"
     },
     {
@@ -152,7 +141,7 @@ const sensorData = [
         "sensor_type": "presion",
         "value": 15.2,
         "estatus": "Falla Baja",
-        "created_at": "2025-11-11 16:21:45",
+        "created_at": "2025-11-11 16:24:45",
         "categoria": "refrigeracion"
     }
 ];
@@ -181,6 +170,18 @@ const alertData = [
         time: "2025-11-11 16:20:00"
     }
 ];
+
+// Estado de la aplicación
+let currentCategory = "automotriz";
+let hiddenDevices = []; // Dispositivos ocultos
+let categoryHiddenState = {
+    automotriz: false,
+    domestico: false,
+    industrial: false,
+    refrigeracion: false,
+    todos: false
+};
+let alertsEnabled = true;
 
 // Función para obtener la clase CSS según el estado
 function getStatusClass(estatus) {
@@ -430,6 +431,12 @@ function renderAlerts() {
     const alertsList = document.getElementById('alertsList');
     alertsList.innerHTML = '';
     
+    // Solo mostrar alertas si están habilitadas
+    if (!alertsEnabled) {
+        alertsList.innerHTML = '<div class="no-alerts">Alertas desactivadas</div>';
+        return;
+    }
+    
     alertData.forEach(alert => {
         const alertItem = document.createElement('div');
         alertItem.className = `alert-item ${alert.type}`;
@@ -654,6 +661,69 @@ document.addEventListener('DOMContentLoaded', function() {
     // Manejar el botón de ocultar/mostrar dispositivo
     const hideDeviceBtn = document.getElementById('hideDeviceBtn');
     hideDeviceBtn.addEventListener('click', toggleHideAllDevices);
+    
+    // Botón de ayuda
+    const helpBtn = document.getElementById('helpBtn');
+    if (helpBtn) {
+        helpBtn.addEventListener('click', function() {
+            alert('Esta es la página principal donde puedes ver el estado de todos tus dispositivos. Usa los filtros para ver dispositivos por categoría y los botones para gestionar su visibilidad.');
+        });
+    }
+    
+    // Modal de configuración
+    const configBtn = document.getElementById('configBtn');
+    if (configBtn) {
+        configBtn.addEventListener('click', function() {
+            // Crear modal si no existe
+            let configModal = document.getElementById('configModal');
+            if (!configModal) {
+                configModal = document.createElement('div');
+                configModal.id = 'configModal';
+                configModal.className = 'modal';
+                configModal.innerHTML = `
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h3>Configuración de Alertas</h3>
+                            <span class="close">&times;</span>
+                        </div>
+                        <div class="modal-body">
+                            <div class="config-option">
+                                <label class="switch">
+                                    <input type="checkbox" id="alertsToggle" ${alertsEnabled ? 'checked' : ''}>
+                                    <span class="slider"></span>
+                                </label>
+                                <span class="config-label">Activar/Desactivar Alertas</span>
+                            </div>
+                            <p class="config-description">Cuando las alertas están desactivadas, no recibirás notificaciones en la página principal.</p>
+                        </div>
+                    </div>
+                `;
+                document.body.appendChild(configModal);
+                
+                // Event listener para el interruptor
+                const toggle = document.getElementById('alertsToggle');
+                toggle.addEventListener('change', function() {
+                    alertsEnabled = this.checked;
+                    renderAlerts(); // Actualizar alertas inmediatamente
+                });
+                
+                // Cerrar modal
+                const closeBtn = configModal.querySelector('.close');
+                closeBtn.addEventListener('click', function() {
+                    configModal.style.display = 'none';
+                });
+                
+                // Cerrar modal al hacer clic fuera
+                window.addEventListener('click', function(event) {
+                    if (event.target === configModal) {
+                        configModal.style.display = 'none';
+                    }
+                });
+            }
+            
+            configModal.style.display = 'block';
+        });
+    }
     
     // Manejar el cierre de modales
     const closeButtons = document.querySelectorAll('.close');

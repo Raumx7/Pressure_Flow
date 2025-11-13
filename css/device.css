@@ -6,7 +6,60 @@
     font-weight: 600;
 }
 
+/* Sidebar específico para device.html */
+.current-device-section {
+    margin-bottom: 20px;
+}
+
+.current-device-section h3 {
+    color: #2c3e50;
+    margin-bottom: 10px;
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.current-device-btn {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 15px;
+    background-color: #3498db;
+    color: white;
+    border-radius: 8px;
+    text-decoration: none;
+    transition: background-color 0.3s;
+}
+
+.current-device-btn:hover {
+    background-color: #2980b9;
+}
+
 /* Contenido principal para device.html */
+.content {
+    flex: 1;
+    padding: 20px;
+    background-color: #f5f7fa;
+    transition: background-image 0.5s ease;
+    background-size: cover;
+    background-position: center;
+}
+
+.content.automotriz {
+    background-image: url('../imagenes/automotriz.jpg');
+}
+
+.content.domestico {
+    background-image: url('../imagenes/domestico.jpg');
+}
+
+.content.industrial {
+    background-image: url('../imagenes/industrial.jpg');
+}
+
+.content.refrigeracion {
+    background-image: url('../imagenes/refrigeracion.jpg');
+}
+
 .device-section {
     background-color: rgba(255, 255, 255, 0.9);
     border-radius: 10px;
@@ -94,7 +147,7 @@
 
 .gauge-value {
     position: absolute;
-    top: 65%;
+    top: 65%;  /* Texto centrado pero un poco más abajo */
     left: 50%;
     transform: translate(-50%, -50%);
     font-weight: bold;
@@ -130,7 +183,7 @@
 
 /* Colores del indicador de estatus según los rangos del manómetro */
 .status-falla-baja, .status-falla-alta {
-    background-color: #e74c3c;
+    background-color: #e74c3c !important;
 }
 
 .status-baja, .status-alta {
@@ -203,6 +256,22 @@
 }
 
 /* Panel de alertas */
+.alerts-panel {
+    width: 300px;
+    background-color: white;
+    box-shadow: -2px 0 5px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    overflow-y: auto;
+}
+
+.alerts-panel h2 {
+    color: #2c3e50;
+    font-size: 20px;
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #ecf0f1;
+}
+
 .alerts-list {
     max-height: 300px;
     overflow-y: auto;

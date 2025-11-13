@@ -1,0 +1,207 @@
+/* Estilos específicos para la página de historial */
+
+/* Sidebar específico para historial.html */
+.current-device-section {
+    margin-bottom: 20px;
+}
+
+.current-device-section h3 {
+    color: #2c3e50;
+    margin-bottom: 10px;
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.current-device-btn {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 15px;
+    background-color: #3498db;
+    color: white;
+    border-radius: 8px;
+    text-decoration: none;
+    transition: background-color 0.3s;
+}
+
+.current-device-btn:hover {
+    background-color: #2980b9;
+}
+
+/* Contenido principal para historial.html */
+.historial-section {
+    background-color: rgba(255, 255, 255, 0.9);
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.historial-section h2 {
+    color: #2c3e50;
+    font-size: 20px;
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #ecf0f1;
+}
+
+/* Controles de la gráfica */
+.chart-controls {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+}
+
+.control-btn {
+    background-color: #3498db;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: background-color 0.3s;
+}
+
+.control-btn:hover {
+    background-color: #2980b9;
+}
+
+.control-btn.active {
+    background-color: #2ecc71;
+}
+
+/* Contenedor de la gráfica */
+.chart-container {
+    background-color: white;
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 30px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    position: relative;
+    height: 400px;
+}
+
+/* Sección de tabla */
+.table-section {
+    margin-top: 30px;
+}
+
+.table-section h3 {
+    color: #2c3e50;
+    margin-bottom: 15px;
+    font-size: 18px;
+}
+
+.table-container {
+    background-color: white;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th, td {
+    padding: 12px 15px;
+    text-align: left;
+    border-bottom: 1px solid #ecf0f1;
+}
+
+th {
+    background-color: #f8f9fa;
+    font-weight: 600;
+    color: #2c3e50;
+}
+
+tr:hover {
+    background-color: #f8f9fa;
+}
+
+/* Estados de la tabla - fondo blanco con texto coloreado */
+.status-baja, .status-alta {
+    color: #f39c12;
+    font-weight: 600;
+    background-color: white !important;
+}
+
+.status-normal {
+    color: #2ecc71;
+    font-weight: 600;
+    background-color: white !important;
+}
+
+.status-falla-baja, .status-falla-alta {
+    color: #e74c3c;
+    font-weight: 600;
+    background-color: white !important;
+}
+
+/* Asegurar que todas las celdas de la tabla tengan fondo blanco */
+#pressureTableBody td {
+    background-color: white;
+}
+
+/* Para las filas al hacer hover */
+#pressureTableBody tr:hover td {
+    background-color: #f8f9fa;
+}
+
+#pressureTableBody tr:hover .status-baja,
+#pressureTableBody tr:hover .status-alta,
+#pressureTableBody tr:hover .status-normal,
+#pressureTableBody tr:hover .status-falla-baja,
+#pressureTableBody tr:hover .status-falla-alta {
+    background-color: #f8f9fa !important;
+}
+
+/* Panel de recomendaciones */
+.recommendations-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 10px;
+}
+
+.recommendations-column {
+    list-style-type: none;
+    padding-left: 0;
+}
+
+.recommendations-column li {
+    padding: 8px 0;
+    border-bottom: 1px solid #ecf0f1;
+    position: relative;
+    padding-left: 20px;
+}
+
+.recommendations-column li:before {
+    content: "•";
+    color: #3498db;
+    position: absolute;
+    left: 0;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .chart-controls {
+        flex-direction: column;
+    }
+    
+    .control-btn {
+        width: 100%;
+        justify-content: center;
+    }
+    
+    .table-container {
+        overflow-x: auto;
+    }
+    
+    table {
+        min-width: 600px;
+    }
+}

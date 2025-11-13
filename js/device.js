@@ -1,4 +1,4 @@
-// Datos de ejemplo proporcionados (mismos que en index.html)
+// Datos de ejemplo proporcionados
 const sensorData = [
     {
         "id": 1,
@@ -15,7 +15,7 @@ const sensorData = [
         "sensor_type": "presion",
         "value": 100.0,
         "estatus": "Baja",
-        "created_at": "2025-11-11 16:21:45",
+        "created_at": "2025-11-11 16:22:45",
         "categoria": "automotriz"
     },
     {
@@ -24,7 +24,7 @@ const sensorData = [
         "sensor_type": "presion",
         "value": 167.0,
         "estatus": "Normal",
-        "created_at": "2025-11-11 16:21:45",
+        "created_at": "2025-11-11 16:23:45",
         "categoria": "automotriz"
     },
     {
@@ -33,7 +33,7 @@ const sensorData = [
         "sensor_type": "presion",
         "value": 50.0,
         "estatus": "Baja",
-        "created_at": "2025-11-11 16:21:45",
+        "created_at": "2025-11-11 16:24:45",
         "categoria": "automotriz"
     },
     {
@@ -51,7 +51,7 @@ const sensorData = [
         "sensor_type": "presion",
         "value": 100.0,
         "estatus": "Baja",
-        "created_at": "2025-11-11 16:21:45",
+        "created_at": "2025-11-11 16:22:45",
         "categoria": "domestico"
     },
     {
@@ -60,7 +60,7 @@ const sensorData = [
         "sensor_type": "presion",
         "value": 167.0,
         "estatus": "Normal",
-        "created_at": "2025-11-11 16:21:45",
+        "created_at": "2025-11-11 16:23:45",
         "categoria": "domestico"
     },
     {
@@ -69,7 +69,7 @@ const sensorData = [
         "sensor_type": "presion",
         "value": 180.5,
         "estatus": "Normal",
-        "created_at": "2025-11-11 16:21:45",
+        "created_at": "2025-11-11 16:24:45",
         "categoria": "domestico"
     },
     {
@@ -87,7 +87,7 @@ const sensorData = [
         "sensor_type": "presion",
         "value": 100.0,
         "estatus": "Baja",
-        "created_at": "2025-11-11 16:21:45",
+        "created_at": "2025-11-11 16:22:45",
         "categoria": "industrial"
     },
     {
@@ -96,7 +96,7 @@ const sensorData = [
         "sensor_type": "presion",
         "value": 167.0,
         "estatus": "Normal",
-        "created_at": "2025-11-11 16:21:45",
+        "created_at": "2025-11-11 16:23:45",
         "categoria": "industrial"
     },
     {
@@ -105,7 +105,7 @@ const sensorData = [
         "sensor_type": "presion",
         "value": 300.7,
         "estatus": "Alta",
-        "created_at": "2025-11-11 16:21:45",
+        "created_at": "2025-11-11 16:24:45",
         "categoria": "industrial"
     },
     {
@@ -123,7 +123,7 @@ const sensorData = [
         "sensor_type": "presion",
         "value": 100.0,
         "estatus": "Baja",
-        "created_at": "2025-11-11 16:21:45",
+        "created_at": "2025-11-11 16:22:45",
         "categoria": "refrigeracion"
     },
     {
@@ -132,7 +132,7 @@ const sensorData = [
         "sensor_type": "presion",
         "value": 167.0,
         "estatus": "Normal",
-        "created_at": "2025-11-11 16:21:45",
+        "created_at": "2025-11-11 16:23:45",
         "categoria": "refrigeracion"
     },
     {
@@ -141,7 +141,7 @@ const sensorData = [
         "sensor_type": "presion",
         "value": 15.2,
         "estatus": "Falla Baja",
-        "created_at": "2025-11-11 16:21:45",
+        "created_at": "2025-11-11 16:24:45",
         "categoria": "refrigeracion"
     }
 ];
@@ -225,7 +225,7 @@ function formatDate(dateString) {
     return `${date.getFullYear()},${(date.getMonth() + 1).toString().padStart(2, '0')},${date.getDate().toString().padStart(2, '0')}`;
 }
 
-// Función para actualizar el manómetro con los nuevos rangos
+// Función para actualizar el manómetro
 function updateGauge(pressure) {
     const gaugeNeedle = document.getElementById('gaugeNeedle');
     const gaugeValue = document.getElementById('gaugeValue');
@@ -272,7 +272,24 @@ function getStatusText(pressure) {
     }
 }
 
-// Modificar la función loadDeviceData para usar las nuevas funciones
+// Función para cargar el nombre del dispositivo actual en el sidebar
+function loadCurrentDevice(deviceId) {
+    const currentDeviceBtn = document.getElementById('currentDeviceBtn');
+    const currentDeviceName = document.getElementById('currentDeviceName');
+    
+    if (currentDeviceBtn && currentDeviceName) {
+        currentDeviceName.textContent = deviceId;
+        currentDeviceBtn.href = `device.html?device_id=${deviceId}`;
+    }
+    
+    // Actualizar el enlace de historial con el device_id
+    const historialLink = document.getElementById('historialLink');
+    if (historialLink) {
+        historialLink.href = `historial.html?device_id=${deviceId}`;
+    }
+}
+
+// Función para cargar los datos del dispositivo
 function loadDeviceData() {
     // Obtener el device_id de la URL
     const urlParams = new URLSearchParams(window.location.search);
@@ -283,6 +300,9 @@ function loadDeviceData() {
         window.location.href = 'index.html';
         return;
     }
+    
+    // Cargar el nombre del dispositivo en el sidebar
+    loadCurrentDevice(deviceId);
     
     // Obtener el último registro del dispositivo
     const deviceData = getLatestDeviceData(deviceId);
@@ -313,7 +333,6 @@ function loadDeviceData() {
     statusIndicator.className = `status-indicator ${statusClass}`;
     statusText.textContent = statusDisplayText;
     
-    // El resto de la función permanece igual...
     // Actualizar la información del dispositivo
     const deviceInfo = document.getElementById('deviceInfo');
     deviceInfo.innerHTML = `
@@ -402,6 +421,14 @@ document.addEventListener('DOMContentLoaded', function() {
     menuToggle.addEventListener('click', function() {
         sidebar.classList.toggle('active');
     });
+    
+    // Botón de ayuda
+    const helpBtn = document.getElementById('helpBtn');
+    if (helpBtn) {
+        helpBtn.addEventListener('click', function() {
+            alert('Esta página muestra el estado detallado del dispositivo seleccionado, incluyendo presión actual, estatus y recomendaciones específicas.');
+        });
+    }
     
     // Cerrar menú al hacer clic fuera de él (para móviles)
     document.addEventListener('click', function(event) {

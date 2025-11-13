@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pressure Flow - Reparaciones</title>
+    <link rel="stylesheet" href="css/estilos.css">
+    <link rel="stylesheet" href="css/reparaciones.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-left">
+                <button id="menuToggle" class="menu-toggle">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <h1>Pressure Flow - Reparaciones</h1>
+            </div>
+            <div class="header-right">
+                <div class="logo">
+                    <img src="https://via.placeholder.com/40x40/3498db/ffffff?text=PF" alt="Logo">
+                </div>
+            </div>
+        </header>
+
+        <div class="main-content">
+            <!-- Sidebar -->
+            <aside class="sidebar" id="sidebar">
+                <div class="sidebar-content">
+                    <h3>Menú</h3>
+                    <div class="filter-options">
+                        <a href="index.html" class="filter-option">
+                            <i class="fas fa-home"></i>
+                            <span>Home</span>
+                        </a>
+                        <a href="historial.html" class="filter-option">
+                            <i class="fas fa-history"></i>
+                            <span>Historial</span>
+                        </a>
+                        <div class="filter-option active">
+                            <i class="fas fa-tools"></i>
+                            <span>Reparaciones</span>
+                        </div>
+                    </div>
+                    
+                    <div class="separator"></div>
+                    
+                    <div class="settings-section">
+                        <h3>Ajustes</h3>
+                        <div class="settings-option" id="helpBtn">
+                            <i class="fas fa-question-circle"></i>
+                            <span>Ayuda</span>
+                        </div>
+                    </div>
+                </div>
+            </aside>
+
+            <!-- Contenido principal -->
+            <main class="content" id="mainContent">
+                <div class="reparaciones-section">
+                    <h2>Centros de Reparación Cercanos</h2>
+                    <div id="map" class="map-container">
+                        <!-- Mapa de Google Maps -->
+                        <div class="map-placeholder">
+                            <i class="fas fa-map-marker-alt"></i>
+                            <p>Mapa de centros de reparación</p>
+                            <small>Aquí se mostrarían los centros de reparación más cercanos usando Google Maps API</small>
+                        </div>
+                    </div>
+                </div>
+            </main>
+
+            <!-- Panel de contactos -->
+            <aside class="alerts-panel">
+                <h2>Contacto de Proveedores</h2>
+                <div class="contact-list">
+                    <div class="contact-item">
+                        <h3>Servicio Técnico Alpha</h3>
+                        <p><i class="fas fa-phone"></i> +1 234 567 890</p>
+                        <p><i class="fas fa-envelope"></i> alpha@example.com</p>
+                        <p><i class="fas fa-clock"></i> Lunes a Viernes: 8:00 - 18:00</p>
+                    </div>
+                    <div class="contact-item">
+                        <h3>Reparaciones Beta</h3>
+                        <p><i class="fas fa-phone"></i> +1 345 678 901</p>
+                        <p><i class="fas fa-envelope"></i> beta@example.com</p>
+                        <p><i class="fas fa-clock"></i> Lunes a Sábado: 9:00 - 17:00</p>
+                    </div>
+                    <div class="contact-item">
+                        <h3>Mantenimiento Gamma</h3>
+                        <p><i class="fas fa-phone"></i> +1 456 789 012</p>
+                        <p><i class="fas fa-envelope"></i> gamma@example.com</p>
+                        <p><i class="fas fa-clock"></i> 24/7 Servicio de Emergencia</p>
+                    </div>
+                    <div class="contact-item">
+                        <h3>Soporte Delta</h3>
+                        <p><i class="fas fa-phone"></i> +1 567 890 123</p>
+                        <p><i class="fas fa-envelope"></i> delta@example.com</p>
+                        <p><i class="fas fa-clock"></i> Lunes a Domingo: 7:00 - 22:00</p>
+                    </div>
+                </div>
+            </aside>
+        </div>
+
+        <div class="last-update" id="lastUpdate">
+            Última actualización: --
+        </div>
+    </div>
+
+    <script src="js/reparaciones.js"></script>
+</body>
+</html>
