@@ -1,5 +1,33 @@
 /* Estilos específicos para la página de reparaciones */
 
+/* Estilos para el botón de dispositivo actual en reparaciones */
+.current-device-section {
+    margin-bottom: 20px;
+}
+
+.current-device-section h3 {
+    color: #2c3e50;
+    margin-bottom: 10px;
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.current-device-btn {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 15px;
+    background-color: #3498db;
+    color: white;
+    border-radius: 8px;
+    text-decoration: none;
+    transition: background-color 0.3s;
+}
+
+.current-device-btn:hover {
+    background-color: #2980b9;
+}
+
 .reparaciones-section {
     background-color: rgba(255, 255, 255, 0.9);
     border-radius: 10px;

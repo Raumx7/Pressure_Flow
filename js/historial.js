@@ -124,32 +124,32 @@ function getStatusColor(estatus) {
 function calculateTrendline(data) {
     const n = data.length;
     let sumX = 0, sumY = 0, sumXY = 0, sumX2 = 0;
-    
+
     data.forEach((point, index) => {
         sumX += index;
         sumY += point;
         sumXY += index * point;
         sumX2 += index * index;
     });
-    
+
     const slope = (n * sumXY - sumX * sumY) / (n * sumX2 - sumX * sumX);
     const intercept = (sumY - slope * sumX) / n;
-    
+
     return data.map((_, index) => intercept + slope * index);
 }
 
 // Función para crear la gráfica
 function createChart() {
     const ctx = document.getElementById('pressureChart').getContext('2d');
-    
+
     // Preparar datos
     const labels = historialData.map(item => formatTime(item.created_at));
     const pressures = historialData.map(item => item.value);
     const statusColors = historialData.map(item => getStatusColor(item.estatus));
-    
+
     // Calcular línea de tendencia si está activa
     const trendlineData = showTrendline ? calculateTrendline(pressures) : [];
-    
+
     // Configuración de la gráfica
     const chartConfig = {
         type: 'line',
@@ -230,7 +230,7 @@ function createChart() {
             }
         }
     };
-    
+
     // Añadir línea de tendencia si está activa
     if (showTrendline) {
         chartConfig.data.datasets.push({
@@ -244,7 +244,7 @@ function createChart() {
             tension: 0
         });
     }
-    
+
     // Crear o actualizar la gráfica
     if (pressureChart) {
         pressureChart.destroy();
@@ -256,11 +256,11 @@ function createChart() {
 function loadTable() {
     const tableBody = document.getElementById('pressureTableBody');
     tableBody.innerHTML = '';
-    
+
     historialData.forEach(item => {
         const row = document.createElement('tr');
         const statusClass = `status-${item.estatus.toLowerCase().replace(' ', '-')}`;
-        
+
         row.innerHTML = `
             <td>${item.id}</td>
             <td>${item.value}</td>
@@ -268,7 +268,7 @@ function loadTable() {
             <td>${formatDate(item.created_at)}</td>
             <td>${formatTime(item.created_at)}</td>
         `;
-        
+
         tableBody.appendChild(row);
     });
 }
@@ -277,10 +277,10 @@ function loadTable() {
 function loadCurrentDevice() {
     const urlParams = new URLSearchParams(window.location.search);
     const deviceId = urlParams.get('device_id') || 'ESP32_001';
-    
+
     const currentDeviceBtn = document.getElementById('currentDeviceBtn');
     const currentDeviceName = document.getElementById('currentDeviceName');
-    
+
     currentDeviceName.textContent = deviceId;
     currentDeviceBtn.href = `device.html?device_id=${deviceId}`;
 }
@@ -290,7 +290,7 @@ function initializePage() {
     loadCurrentDevice();
     createChart();
     loadTable();
-    
+
     // Actualizar la última hora de actualización
     const now = new Date();
     const lastUpdateElement = document.getElementById('lastUpdate');
@@ -300,44 +300,167 @@ function initializePage() {
 // Event Listeners
 document.addEventListener('DOMContentLoaded', function() {
     initializePage();
-    
-    // Manejar el menú hamburguesa (para móviles)
-    const menuToggle = document.getElementById('menuToggle');
-    const sidebar = document.getElementById('sidebar');
-    
-    menuToggle.addEventListener('click', function() {
-        sidebar.classList.toggle('active');
-    });
-    
+
     // Manejar el botón de línea de tendencia
     const trendlineBtn = document.getElementById('trendlineBtn');
-    trendlineBtn.addEventListener('click', function() {
-        showTrendline = !showTrendline;
-        this.classList.toggle('active', showTrendline);
-        createChart();
-    });
-    
-    // Manejar el botón de filtrar (placeholder)
+    if (trendlineBtn) {
+        trendlineBtn.addEventListener('click', function() {
+            showTrendline = !showTrendline;
+            this.classList.toggle('active', showTrendline);
+            createChart();
+        });
+    }
+
+    // Manejar el botón de filtrar
     const filterBtn = document.getElementById('filterBtn');
-    filterBtn.addEventListener('click', function() {
-        // Funcionalidad de filtro en desarrollo
-        console.log('Funcionalidad de filtro - en desarrollo');
-    });
-    
+    if (filterBtn) {
+        filterBtn.addEventListener('click', function() {
+            // Crear modal de filtro
+            let filterModal = document.getElementById('filterModal');
+            if (!filterModal) {
+                filterModal = document.createElement('div');
+                filterModal.id = 'filterModal';
+                filterModal.className = 'modal';
+                filterModal.innerHTML = `
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h3>Filtrar Historial</h3>
+                            <span class="close">&times;</span>
+                        </div>
+                        <div class="modal-body">
+                            <div class="filter-options-modal">
+                                <div class="filter-group">
+                                    <label for="dateRange">Rango de Fechas:</label>
+                                    <select id="dateRange" class="filter-select">
+                                        <option value="all">Todos los registros</option>
+                                        <option value="today">Hoy</option>
+                                        <option value="week">Esta semana</option>
+                                        <option value="month">Este mes</option>
+                                    </select>
+                                </div>
+                                
+                                <div class="filter-group">
+                                    <label for="statusFilter">Filtrar por Estado:</label>
+                                    <select id="statusFilter" class="filter-select">
+                                        <option value="all">Todos los estados</option>
+                                        <option value="normal">Solo Normal</option>
+                                        <option value="baja">Solo Baja</option>
+                                        <option value="alta">Solo Alta</option>
+                                        <option value="falla">Solo Fallas</option>
+                                    </select>
+                                </div>
+                                
+                                <div class="filter-actions">
+                                    <button id="applyFilter" class="control-btn" style="width: 100%; margin-top: 15px;">
+                                        <i class="fas fa-check"></i> Aplicar Filtros
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                document.body.appendChild(filterModal);
+
+                // Añadir funcionalidad para cerrar el modal
+                const closeBtn = filterModal.querySelector('.close');
+                closeBtn.addEventListener('click', function() {
+                    filterModal.style.display = 'none';
+                });
+
+                // Cerrar modal al hacer clic fuera
+                window.addEventListener('click', function(event) {
+                    if (event.target === filterModal) {
+                        filterModal.style.display = 'none';
+                    }
+                });
+
+                // Aplicar filtros
+                const applyFilter = filterModal.querySelector('#applyFilter');
+                applyFilter.addEventListener('click', function() {
+                    const dateRange = filterModal.querySelector('#dateRange').value;
+                    const statusFilter = filterModal.querySelector('#statusFilter').value;
+                    
+                    // Aquí iría la lógica para aplicar los filtros
+                    console.log('Aplicando filtros:', { dateRange, statusFilter });
+                    alert('Funcionalidad de filtro en desarrollo. Filtros seleccionados:\n' +
+                          `Rango de fechas: ${dateRange}\n` +
+                          `Estado: ${statusFilter}`);
+                    
+                    filterModal.style.display = 'none';
+                });
+            }
+
+            filterModal.style.display = 'block';
+        });
+    }
+
     // Botón de ayuda
     const helpBtn = document.getElementById('helpBtn');
     if (helpBtn) {
         helpBtn.addEventListener('click', function() {
-            alert('Esta página muestra el historial de lecturas del dispositivo, con gráficas de tendencia y tabla de datos detallada.');
+            // Crear modal de ayuda si no existe
+            let helpModal = document.getElementById('helpModal');
+            if (!helpModal) {
+                helpModal = document.createElement('div');
+                helpModal.id = 'helpModal';
+                helpModal.className = 'modal';
+                helpModal.innerHTML = `
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h3>Ayuda - Historial</h3>
+                            <span class="close">&times;</span>
+                        </div>
+                        <div class="modal-body">
+                            <div class="help-section">
+                                <h4>Página de Historial</h4>
+                                <p>Esta página muestra el historial completo de lecturas del dispositivo.</p>
+                                
+                                <div class="help-item">
+                                    <strong>Gráfica de Presiones:</strong>
+                                    <p>La gráfica muestra la evolución de las lecturas de presión a lo largo del tiempo.</p>
+                                </div>
+                                
+                                <div class="help-item">
+                                    <strong>Línea de Tendencia:</strong>
+                                    <p>El botón "Ajustar Línea de Tendencia" muestra u oculta una línea que indica la tendencia general de las lecturas.</p>
+                                </div>
+                                
+                                <div class="help-item">
+                                    <strong>Tabla de Datos:</strong>
+                                    <p>La tabla muestra todos los registros con información detallada de cada lectura.</p>
+                                </div>
+                                
+                                <div class="help-item">
+                                    <strong>Colores de Estado:</strong>
+                                    <p>Los estados se muestran con colores:
+                                    <ul>
+                                        <li><span style="color: #e74c3c">Falla Baja/Alta:</span> Rojo</li>
+                                        <li><span style="color: #f39c12">Baja/Alta:</span> Naranja</li>
+                                        <li><span style="color: #2ecc71">Normal:</span> Verde</li>
+                                    </ul>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                document.body.appendChild(helpModal);
+
+                // Añadir funcionalidad para cerrar el modal
+                const closeBtn = helpModal.querySelector('.close');
+                closeBtn.addEventListener('click', function() {
+                    helpModal.style.display = 'none';
+                });
+
+                // Cerrar modal al hacer clic fuera
+                window.addEventListener('click', function(event) {
+                    if (event.target === helpModal) {
+                        helpModal.style.display = 'none';
+                    }
+                });
+            }
+
+            helpModal.style.display = 'block';
         });
     }
-    
-    // Cerrar menú al hacer clic fuera de él (para móviles)
-    document.addEventListener('click', function(event) {
-        if (window.innerWidth <= 768) {
-            if (!sidebar.contains(event.target) && !menuToggle.contains(event.target)) {
-                sidebar.classList.remove('active');
-            }
-        }
-    });
 });

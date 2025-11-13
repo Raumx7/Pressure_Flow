@@ -209,17 +209,17 @@ function getCategoryName(category) {
 // Función para obtener el último estado de cada dispositivo (solo el de ID mayor)
 function getLatestDeviceStatus() {
     const deviceMap = new Map();
-    
+
     // Ordenar por ID descendente (mayor ID primero)
     const sortedData = [...sensorData].sort((a, b) => b.id - a.id);
-    
+
     // Tomar solo el primer registro (mayor ID) de cada device_id
     sortedData.forEach(device => {
         if (!deviceMap.has(device.device_id)) {
             deviceMap.set(device.device_id, device);
         }
     });
-    
+
     return Array.from(deviceMap.values());
 }
 
@@ -230,11 +230,11 @@ function filterDevicesByCategory(category) {
         if (categoryHiddenState.todos) return [];
         return getLatestDeviceStatus().filter(device => !hiddenDevices.includes(device.device_id));
     }
-    
+
     // Si la categoría actual está oculta, no mostrar nada
     if (categoryHiddenState[category]) return [];
-    
-    return getLatestDeviceStatus().filter(device => 
+
+    return getLatestDeviceStatus().filter(device =>
         device.categoria === category && !hiddenDevices.includes(device.device_id)
     );
 }
@@ -242,10 +242,10 @@ function filterDevicesByCategory(category) {
 // Función para cambiar el fondo según la categoría
 function updateBackground(category) {
     const mainContent = document.getElementById('mainContent');
-    
+
     // Remover todas las clases de categoría
     mainContent.classList.remove('automotriz', 'domestico', 'industrial', 'refrigeracion', 'todos');
-    
+
     // Añadir la clase correspondiente
     if (category !== 'todos') {
         mainContent.classList.add(category);
@@ -258,22 +258,22 @@ function updateBackground(category) {
 function renderDevices() {
     const sensorGrid = document.getElementById('sensorGrid');
     sensorGrid.innerHTML = '';
-    
+
     const filteredDevices = filterDevicesByCategory(currentCategory);
-    
+
     if (filteredDevices.length === 0) {
         sensorGrid.innerHTML = '<div class="no-sensors">No hay dispositivos en esta categoría</div>';
         return;
     }
-    
+
     filteredDevices.forEach(device => {
         const sensorCard = document.createElement('div');
         sensorCard.className = 'sensor-card';
         // Añadir cursor pointer para indicar que es clickable
         sensorCard.style.cursor = 'pointer';
-        
+
         const statusClass = getStatusClass(device.estatus);
-        
+
         sensorCard.innerHTML = `
             <div class="sensor-name">
                 ${device.device_id}
@@ -292,7 +292,7 @@ function renderDevices() {
             <div class="sensor-value">${device.value}</div>
             <div class="sensor-status ${statusClass}">${device.estatus}</div>
         `;
-        
+
         // Añadir event listener para redirigir a device.html al hacer clic en la tarjeta
         sensorCard.addEventListener('click', function(e) {
             // Evitar la redirección si se hizo clic en el menú de opciones
@@ -300,43 +300,43 @@ function renderDevices() {
                 window.location.href = `device.html?device_id=${device.device_id}`;
             }
         });
-        
+
         // Añadir event listeners para el menú de opciones
         const optionsMenu = sensorCard.querySelector('.options-menu');
         const optionsTrigger = sensorCard.querySelector('.sensor-options');
-        
+
         optionsTrigger.addEventListener('click', function(e) {
             e.stopPropagation(); // Evitar que el clic se propague a la tarjeta (y así evitar redirección)
             // Alternar la visibilidad del menú
             optionsMenu.style.display = optionsMenu.style.display === 'block' ? 'none' : 'block';
         });
-        
+
         // Cerrar el menú si se hace clic en otra parte
         document.addEventListener('click', function() {
             optionsMenu.style.display = 'none';
         });
-        
+
         // Manejar las opciones del menú
         sensorCard.querySelectorAll('.option-item').forEach(option => {
             option.addEventListener('click', function(e) {
                 e.stopPropagation(); // Evitar que el clic se propague a la tarjeta
                 const action = this.dataset.action;
                 const deviceId = this.dataset.deviceId;
-                
+
                 if (action === 'info') {
                     showDeviceInfo(deviceId);
                 } else if (action === 'hide') {
                     hideSingleDevice(deviceId);
                 }
-                
+
                 // Ocultar el menú después de la acción
                 optionsMenu.style.display = 'none';
             });
         });
-        
+
         sensorGrid.appendChild(sensorCard);
     });
-    
+
     // Actualizar la última hora de actualización
     const now = new Date();
     const lastUpdateElement = document.getElementById('lastUpdate');
@@ -347,7 +347,7 @@ function renderDevices() {
 function showDeviceInfo(deviceId) {
     const device = getLatestDeviceStatus().find(d => d.device_id === deviceId);
     if (!device) return;
-    
+
     // Crear modal de información si no existe
     let infoModal = document.getElementById('deviceInfoModal');
     if (!infoModal) {
@@ -366,13 +366,13 @@ function showDeviceInfo(deviceId) {
             </div>
         `;
         document.body.appendChild(infoModal);
-        
+
         // Añadir funcionalidad para cerrar el modal
         const closeBtn = infoModal.querySelector('.close');
         closeBtn.addEventListener('click', function() {
             infoModal.style.display = 'none';
         });
-        
+
         // Cerrar modal al hacer clic fuera
         window.addEventListener('click', function(event) {
             if (event.target === infoModal) {
@@ -380,13 +380,13 @@ function showDeviceInfo(deviceId) {
             }
         });
     }
-    
+
     const details = document.getElementById('deviceInfoDetails');
-    
+
     // Formatear la fecha
     const date = new Date(device.created_at);
     const formattedDate = `${date.getFullYear()},${(date.getMonth() + 1).toString().padStart(2, '0')},${date.getDate().toString().padStart(2, '0')}`;
-    
+
     details.innerHTML = `
         <div class="info-row">
             <span class="info-label">Device ID:</span>
@@ -413,7 +413,7 @@ function showDeviceInfo(deviceId) {
             <span class="info-value">${getCategoryName(device.categoria)}</span>
         </div>
     `;
-    
+
     infoModal.style.display = 'block';
 }
 
@@ -430,21 +430,21 @@ function hideSingleDevice(deviceId) {
 function renderAlerts() {
     const alertsList = document.getElementById('alertsList');
     alertsList.innerHTML = '';
-    
+
     // Solo mostrar alertas si están habilitadas
     if (!alertsEnabled) {
         alertsList.innerHTML = '<div class="no-alerts">Alertas desactivadas</div>';
         return;
     }
-    
+
     alertData.forEach(alert => {
         const alertItem = document.createElement('div');
         alertItem.className = `alert-item ${alert.type}`;
-        
-        const iconClass = alert.type === 'critical' ? 'fa-exclamation-circle' : 
-                         alert.type === 'warning' ? 'fa-exclamation-triangle' : 
+
+        const iconClass = alert.type === 'critical' ? 'fa-exclamation-circle' :
+                         alert.type === 'warning' ? 'fa-exclamation-triangle' :
                          'fa-info-circle';
-        
+
         alertItem.innerHTML = `
             <div class="alert-icon">
                 <i class="fas ${iconClass}"></i>
@@ -455,7 +455,7 @@ function renderAlerts() {
                 <div class="alert-time">${alert.time}</div>
             </div>
         `;
-        
+
         alertsList.appendChild(alertItem);
     });
 }
@@ -464,23 +464,23 @@ function renderAlerts() {
 function renderAvailableDevices() {
     const availableDevicesContainer = document.getElementById('availableDevices');
     availableDevicesContainer.innerHTML = '';
-    
+
     // Filtrar dispositivos que están ocultos y son de la categoría actual
-    const devicesToShow = getLatestDeviceStatus().filter(device => 
-        hiddenDevices.includes(device.device_id) && 
+    const devicesToShow = getLatestDeviceStatus().filter(device =>
+        hiddenDevices.includes(device.device_id) &&
         (currentCategory === 'todos' || device.categoria === currentCategory)
     );
-    
+
     if (devicesToShow.length === 0) {
         availableDevicesContainer.innerHTML = '<div class="no-devices">No hay dispositivos disponibles para mostrar</div>';
         return;
     }
-    
+
     devicesToShow.forEach(device => {
         const deviceElement = document.createElement('div');
         deviceElement.className = 'available-device';
         deviceElement.dataset.deviceId = device.device_id;
-        
+
         deviceElement.innerHTML = `
             <div class="device-info">
                 <div class="device-name">${device.device_id}</div>
@@ -490,11 +490,11 @@ function renderAvailableDevices() {
                 <i class="fas fa-plus"></i>
             </div>
         `;
-        
+
         deviceElement.addEventListener('click', function() {
             showSingleDevice(device.device_id);
         });
-        
+
         availableDevicesContainer.appendChild(deviceElement);
     });
 }
@@ -525,10 +525,10 @@ function showAllDevices() {
 // Función para alternar el estado de ocultar/mostrar todos los dispositivos de la categoría actual
 function toggleHideAllDevices() {
     const hideButton = document.getElementById('hideDeviceBtn');
-    
+
     // Alternar el estado de la categoría actual
     categoryHiddenState[currentCategory] = !categoryHiddenState[currentCategory];
-    
+
     if (categoryHiddenState[currentCategory]) {
         // Ocultar todos los dispositivos de la categoría actual
         hideButton.innerHTML = '<i class="fas fa-eye"></i> Mostrar Dispositivos';
@@ -538,7 +538,7 @@ function toggleHideAllDevices() {
         hideButton.innerHTML = '<i class="fas fa-eye-slash"></i> Ocultar Dispositivos';
         hideButton.classList.remove('hidden');
     }
-    
+
     renderDevices();
     updateAddButton();
 }
@@ -546,13 +546,13 @@ function toggleHideAllDevices() {
 // Función para actualizar el estado del botón de añadir
 function updateAddButton() {
     const addButton = document.getElementById('addDeviceBtn');
-    
+
     // Verificar si hay dispositivos ocultos en la categoría actual
-    const hiddenDevicesInCategory = getLatestDeviceStatus().filter(device => 
-        hiddenDevices.includes(device.device_id) && 
+    const hiddenDevicesInCategory = getLatestDeviceStatus().filter(device =>
+        hiddenDevices.includes(device.device_id) &&
         (currentCategory === 'todos' || device.categoria === currentCategory)
     );
-    
+
     if (hiddenDevicesInCategory.length === 0 || categoryHiddenState[currentCategory]) {
         addButton.disabled = true;
     } else {
@@ -563,7 +563,7 @@ function updateAddButton() {
 // Función para actualizar el estado del botón de ocultar
 function updateHideButton() {
     const hideButton = document.getElementById('hideDeviceBtn');
-    
+
     if (categoryHiddenState[currentCategory]) {
         hideButton.innerHTML = '<i class="fas fa-eye"></i> Mostrar Dispositivos';
         hideButton.classList.add('hidden');
@@ -576,7 +576,7 @@ function updateHideButton() {
 // Función para cambiar la categoría activa
 function setActiveCategory(category) {
     currentCategory = category;
-    
+
     // Actualizar la interfaz de filtros
     const filterOptions = document.querySelectorAll('.filter-option');
     filterOptions.forEach(option => {
@@ -586,14 +586,14 @@ function setActiveCategory(category) {
             option.classList.remove('active');
         }
     });
-    
+
     // Actualizar el fondo
     updateBackground(category);
-    
+
     // Actualizar los botones
     updateAddButton();
     updateHideButton();
-    
+
     // Renderizar los dispositivos con el nuevo filtro
     renderDevices();
 }
@@ -602,7 +602,7 @@ function setActiveCategory(category) {
 function openModal(modalId) {
     const modal = document.getElementById(modalId);
     modal.style.display = 'block';
-    
+
     if (modalId === 'addDeviceModal') {
         renderAvailableDevices();
     }
@@ -629,10 +629,10 @@ document.addEventListener('DOMContentLoaded', function() {
     renderAlerts();
     updateAddButton();
     updateHideButton();
-    
+
     // Configurar la actualización automática cada 30 segundos
     setInterval(simulateDataUpdate, 30000);
-    
+
     // Manejar clics en las opciones de filtro
     const filterOptions = document.querySelectorAll('.filter-option');
     filterOptions.forEach(option => {
@@ -641,35 +641,83 @@ document.addEventListener('DOMContentLoaded', function() {
             setActiveCategory(category);
         });
     });
-    
-    // Manejar el menú hamburguesa (para móviles)
-    const menuToggle = document.getElementById('menuToggle');
-    const sidebar = document.getElementById('sidebar');
-    
-    menuToggle.addEventListener('click', function() {
-        sidebar.classList.toggle('active');
-    });
-    
+
     // Manejar el botón de añadir dispositivo
     const addDeviceBtn = document.getElementById('addDeviceBtn');
     addDeviceBtn.addEventListener('click', () => openModal('addDeviceModal'));
-    
+
     // Manejar el botón de añadir todos
     const addAllBtn = document.getElementById('addAllBtn');
     addAllBtn.addEventListener('click', showAllDevices);
-    
+
     // Manejar el botón de ocultar/mostrar dispositivo
     const hideDeviceBtn = document.getElementById('hideDeviceBtn');
     hideDeviceBtn.addEventListener('click', toggleHideAllDevices);
-    
+
     // Botón de ayuda
     const helpBtn = document.getElementById('helpBtn');
     if (helpBtn) {
         helpBtn.addEventListener('click', function() {
-            alert('Esta es la página principal donde puedes ver el estado de todos tus dispositivos. Usa los filtros para ver dispositivos por categoría y los botones para gestionar su visibilidad.');
+            // Crear modal de ayuda si no existe
+            let helpModal = document.getElementById('helpModal');
+            if (!helpModal) {
+                helpModal = document.createElement('div');
+                helpModal.id = 'helpModal';
+                helpModal.className = 'modal';
+                helpModal.innerHTML = `
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h3>Ayuda - Pressure Flow</h3>
+                            <span class="close">&times;</span>
+                        </div>
+                        <div class="modal-body">
+                            <div class="help-section">
+                                <h4>¿Cómo usar Pressure Flow?</h4>
+                                <p>Pressure Flow te permite monitorear dispositivos de presión en tiempo real.</p>
+                                
+                                <div class="help-item">
+                                    <strong>Filtrar por Categoría:</strong>
+                                    <p>Usa el panel lateral para filtrar dispositivos por categoría: Automotriz, Doméstico, Industrial, Refrigeración o ver Todos.</p>
+                                </div>
+                                
+                                <div class="help-item">
+                                    <strong>Añadir/Ocultar Dispositivos:</strong>
+                                    <p>Usa los botones "Añadir Dispositivos" y "Ocultar Dispositivos" para gestionar qué dispositivos se muestran.</p>
+                                </div>
+                                
+                                <div class="help-item">
+                                    <strong>Ver Detalles:</strong>
+                                    <p>Haz clic en cualquier tarjeta de dispositivo para ver información detallada y el historial.</p>
+                                </div>
+                                
+                                <div class="help-item">
+                                    <strong>Alertas:</strong>
+                                    <p>El panel de alertas muestra notificaciones importantes sobre el estado de tus dispositivos.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                document.body.appendChild(helpModal);
+
+                // Añadir funcionalidad para cerrar el modal
+                const closeBtn = helpModal.querySelector('.close');
+                closeBtn.addEventListener('click', function() {
+                    helpModal.style.display = 'none';
+                });
+
+                // Cerrar modal al hacer clic fuera
+                window.addEventListener('click', function(event) {
+                    if (event.target === helpModal) {
+                        helpModal.style.display = 'none';
+                    }
+                });
+            }
+
+            helpModal.style.display = 'block';
         });
     }
-    
+
     // Modal de configuración
     const configBtn = document.getElementById('configBtn');
     if (configBtn) {
@@ -699,20 +747,20 @@ document.addEventListener('DOMContentLoaded', function() {
                     </div>
                 `;
                 document.body.appendChild(configModal);
-                
+
                 // Event listener para el interruptor
                 const toggle = document.getElementById('alertsToggle');
                 toggle.addEventListener('change', function() {
                     alertsEnabled = this.checked;
                     renderAlerts(); // Actualizar alertas inmediatamente
                 });
-                
+
                 // Cerrar modal
                 const closeBtn = configModal.querySelector('.close');
                 closeBtn.addEventListener('click', function() {
                     configModal.style.display = 'none';
                 });
-                
+
                 // Cerrar modal al hacer clic fuera
                 window.addEventListener('click', function(event) {
                     if (event.target === configModal) {
@@ -720,11 +768,11 @@ document.addEventListener('DOMContentLoaded', function() {
                     }
                 });
             }
-            
+
             configModal.style.display = 'block';
         });
     }
-    
+
     // Manejar el cierre de modales
     const closeButtons = document.querySelectorAll('.close');
     closeButtons.forEach(button => {
@@ -733,18 +781,11 @@ document.addEventListener('DOMContentLoaded', function() {
             modal.style.display = 'none';
         });
     });
-    
+
     // Cerrar modal al hacer clic fuera de él
     window.addEventListener('click', function(event) {
         if (event.target.classList.contains('modal')) {
             event.target.style.display = 'none';
-        }
-        
-        // Cerrar menú al hacer clic fuera de él (para móviles)
-        if (window.innerWidth <= 768) {
-            if (!sidebar.contains(event.target) && !menuToggle.contains(event.target)) {
-                sidebar.classList.remove('active');
-            }
         }
     });
 });

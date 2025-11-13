@@ -14,9 +14,6 @@
         <!-- Header -->
         <header class="header">
             <div class="header-left">
-                <button id="menuToggle" class="menu-toggle">
-                    <i class="fas fa-bars"></i>
-                </button>
                 <h1>Pressure Flow - Historial</h1>
             </div>
             <div class="header-right">
@@ -24,7 +21,7 @@
                     <i class="fas fa-user-cog"></i>
                 </div>
                 <div class="logo">
-                    <img src="https://via.placeholder.com/40x40/3498db/ffffff?text=PF" alt="Logo">
+                    <img src="imagenes/logo.jpg" alt="Logo">
                 </div>
             </div>
         </header>
@@ -48,9 +45,9 @@
                             <span>Reparaciones</span>
                         </a>
                     </div>
-                    
+
                     <div class="separator"></div>
-                    
+
                     <!-- Botón del dispositivo actual -->
                     <div class="current-device-section">
                         <h3>Dispositivo Actual</h3>
@@ -59,9 +56,9 @@
                             <span id="currentDeviceName">Cargando...</span>
                         </a>
                     </div>
-                    
+
                     <div class="separator"></div>
-                    
+
                     <div class="settings-section">
                         <h3>Ajustes</h3>
                         <div class="settings-option" id="helpBtn">
@@ -76,7 +73,7 @@
             <main class="content" id="mainContent">
                 <div class="historial-section">
                     <h2>Historial de Presiones</h2>
-                    
+
                     <!-- Controles de la gráfica -->
                     <div class="chart-controls">
                         <button id="filterBtn" class="control-btn">
@@ -86,12 +83,12 @@
                             <i class="fas fa-chart-line"></i> Ajustar Línea de Tendencia
                         </button>
                     </div>
-                    
+
                     <!-- Gráfica -->
                     <div class="chart-container">
                         <canvas id="pressureChart"></canvas>
                     </div>
-                    
+
                     <!-- Tabla de datos -->
                     <div class="table-section">
                         <h3>Registros de Presión</h3>

@@ -123,23 +123,23 @@ tr:hover {
     background-color: #f8f9fa;
 }
 
-/* Estados de la tabla - fondo blanco con texto coloreado */
+/* Estados de la tabla - SOLO color de texto, fondo transparente */
 .status-baja, .status-alta {
-    color: #f39c12;
+    color: #f39c12 !important;
     font-weight: 600;
-    background-color: white !important;
+    background-color: transparent !important;
 }
 
 .status-normal {
-    color: #2ecc71;
+    color: #2ecc71 !important;
     font-weight: 600;
-    background-color: white !important;
+    background-color: transparent !important;
 }
 
 .status-falla-baja, .status-falla-alta {
-    color: #e74c3c;
+    color: #e74c3c !important;
     font-weight: 600;
-    background-color: white !important;
+    background-color: transparent !important;
 }
 
 /* Asegurar que todas las celdas de la tabla tengan fondo blanco */
@@ -157,7 +157,7 @@ tr:hover {
 #pressureTableBody tr:hover .status-normal,
 #pressureTableBody tr:hover .status-falla-baja,
 #pressureTableBody tr:hover .status-falla-alta {
-    background-color: #f8f9fa !important;
+    background-color: transparent !important;
 }
 
 /* Panel de recomendaciones */
@@ -186,21 +186,51 @@ tr:hover {
     left: 0;
 }
 
+/* Estilos para el modal de filtros */
+.filter-options-modal {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.filter-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.filter-group label {
+    font-weight: 600;
+    color: #2c3e50;
+}
+
+.filter-select {
+    padding: 10px;
+    border: 1px solid #ecf0f1;
+    border-radius: 5px;
+    font-size: 14px;
+    background-color: white;
+}
+
+.filter-actions {
+    margin-top: 10px;
+}
+
 /* Responsive */
 @media (max-width: 768px) {
     .chart-controls {
         flex-direction: column;
     }
-    
+
     .control-btn {
         width: 100%;
         justify-content: center;
     }
-    
+
     .table-container {
         overflow-x: auto;
     }
-    
+
     table {
         min-width: 600px;
     }

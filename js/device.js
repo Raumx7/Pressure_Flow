@@ -231,7 +231,7 @@ function updateGauge(pressure) {
     const gaugeValue = document.getElementById('gaugeValue');
     
     // Calcular la rotación basada en los nuevos rangos (0-580 PSI)
-    // El manómetro tiene 360 grados, pero usamos 270 para el arco visible
+    // El manómetro tiene 360 grados
     const maxPressure = 580;
     const rotation = (pressure / maxPressure) * 360;
     gaugeNeedle.style.transform = `translateX(-50%) rotate(${rotation}deg)`;
@@ -414,28 +414,72 @@ document.addEventListener('DOMContentLoaded', function() {
     // Configurar la actualización automática cada 30 segundos
     setInterval(simulateDataUpdate, 30000);
     
-    // Manejar el menú hamburguesa (para móviles)
-    const menuToggle = document.getElementById('menuToggle');
-    const sidebar = document.getElementById('sidebar');
-    
-    menuToggle.addEventListener('click', function() {
-        sidebar.classList.toggle('active');
-    });
-    
     // Botón de ayuda
     const helpBtn = document.getElementById('helpBtn');
     if (helpBtn) {
         helpBtn.addEventListener('click', function() {
-            alert('Esta página muestra el estado detallado del dispositivo seleccionado, incluyendo presión actual, estatus y recomendaciones específicas.');
+            // Crear modal de ayuda si no existe
+            let helpModal = document.getElementById('helpModal');
+            if (!helpModal) {
+                helpModal = document.createElement('div');
+                helpModal.id = 'helpModal';
+                helpModal.className = 'modal';
+                helpModal.innerHTML = `
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h3>Ayuda - Dispositivo</h3>
+                            <span class="close">&times;</span>
+                        </div>
+                        <div class="modal-body">
+                            <div class="help-section">
+                                <h4>Página de Dispositivo</h4>
+                                <p>Esta página muestra información detallada del dispositivo seleccionado.</p>
+                                
+                                <div class="help-item">
+                                    <strong>Manómetro:</strong>
+                                    <p>El manómetro muestra la presión actual en PSI con colores que indican el estado:</p>
+                                    <ul>
+                                        <li><span style="color: #e74c3c">● Rojo:</span> Falla (muy baja o muy alta)</li>
+                                        <li><span style="color: #FFD900">● Amarillo:</span> Presión baja o alta</li>
+                                        <li><span style="color: #2ecc71">● Verde:</span> Presión normal</li>
+                                    </ul>
+                                </div>
+                                
+                                <div class="help-item">
+                                    <strong>Información del Dispositivo:</strong>
+                                    <p>Muestra detalles técnicos como ID del dispositivo, tipo de sensor, última medición y categoría.</p>
+                                </div>
+                                
+                                <div class="help-item">
+                                    <strong>Alertas:</strong>
+                                    <p>El panel lateral muestra alertas específicas para este dispositivo.</p>
+                                </div>
+                                
+                                <div class="help-item">
+                                    <strong>Navegación:</strong>
+                                    <p>Usa el menú lateral para ir al Historial o buscar Reparaciones.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                document.body.appendChild(helpModal);
+
+                // Añadir funcionalidad para cerrar el modal
+                const closeBtn = helpModal.querySelector('.close');
+                closeBtn.addEventListener('click', function() {
+                    helpModal.style.display = 'none';
+                });
+
+                // Cerrar modal al hacer clic fuera
+                window.addEventListener('click', function(event) {
+                    if (event.target === helpModal) {
+                        helpModal.style.display = 'none';
+                    }
+                });
+            }
+
+            helpModal.style.display = 'block';
         });
     }
-    
-    // Cerrar menú al hacer clic fuera de él (para móviles)
-    document.addEventListener('click', function(event) {
-        if (window.innerWidth <= 768) {
-            if (!sidebar.contains(event.target) && !menuToggle.contains(event.target)) {
-                sidebar.classList.remove('active');
-            }
-        }
-    });
 });

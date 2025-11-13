@@ -72,8 +72,12 @@ body {
     background-color: rgba(255, 255, 255, 0.1);
 }
 
+/* Logo */
 .logo img {
+    width: 40px;
+    height: 40px;
     border-radius: 4px;
+    object-fit: cover;
 }
 
 /* Main Content */
@@ -166,8 +170,46 @@ body {
     background-color: #f5f7fa;
 }
 
+/* Fondos por categoría para el index */
+.content.automotriz {
+    background-image: url('../imagenes/automotriz.jpg');
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+}
+
+.content.domestico {
+    background-image: url('../imagenes/domestico.jpg');
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+}
+
+.content.industrial {
+    background-image: url('../imagenes/industrial.jpg');
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+}
+
+.content.refrigeracion {
+    background-image: url('../imagenes/refrigeracion.jpg');
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+}
+
+.content.todos {
+    background-image: url('../imagenes/todos.jpg');
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+}
+
+/* Asegurar que el contenido sea legible sobre las imágenes de fondo */
 .sensors-section {
-    background-color: white;
+    background-color: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(5px);
     border-radius: 10px;
     padding: 20px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
@@ -635,6 +677,43 @@ input:checked + .slider:before {
     transform: translateX(26px);
 }
 
+/* Estilos para la sección de ayuda */
+.help-section {
+    line-height: 1.6;
+}
+
+.help-section h4 {
+    color: #2c3e50;
+    margin-bottom: 15px;
+    font-size: 18px;
+}
+
+.help-item {
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #ecf0f1;
+}
+
+.help-item:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+}
+
+.help-item strong {
+    color: #2c3e50;
+    display: block;
+    margin-bottom: 5px;
+}
+
+.help-item ul {
+    margin: 10px 0;
+    padding-left: 20px;
+}
+
+.help-item li {
+    margin-bottom: 5px;
+}
+
 /* Responsive */
 @media (max-width: 768px) {
     .sidebar {
@@ -645,11 +724,11 @@ input:checked + .slider:before {
         z-index: 1000;
         transform: translateX(-100%);
     }
-    
+
     .sidebar.active {
         transform: translateX(0);
     }
-    
+
     .alerts-panel {
         position: fixed;
         top: 0;
@@ -658,26 +737,26 @@ input:checked + .slider:before {
         z-index: 1000;
         transform: translateX(100%);
     }
-    
+
     .alerts-panel.active {
         transform: translateX(0);
     }
-    
+
     .sensor-grid {
         grid-template-columns: 1fr;
     }
-    
+
     .section-header {
         flex-direction: column;
         align-items: flex-start;
         gap: 10px;
     }
-    
+
     .button-group {
         width: 100%;
         justify-content: space-between;
     }
-    
+
     .add-device-btn, .hide-device-btn {
         flex: 1;
         justify-content: center;
