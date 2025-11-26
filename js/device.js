@@ -1,190 +1,49 @@
-// Datos de ejemplo proporcionados
-const sensorData = [
-    {
-        "id": 1,
-        "device_id": "ESP32_001",
-        "sensor_type": "presion",
-        "value": 70.0,
-        "estatus": "Baja",
-        "created_at": "2025-11-11 16:21:45",
-        "categoria": "automotriz"
-    },
-    {
-        "id": 2,
-        "device_id": "ESP32_001",
-        "sensor_type": "presion",
-        "value": 100.0,
-        "estatus": "Baja",
-        "created_at": "2025-11-11 16:22:45",
-        "categoria": "automotriz"
-    },
-    {
-        "id": 3,
-        "device_id": "ESP32_001",
-        "sensor_type": "presion",
-        "value": 167.0,
-        "estatus": "Normal",
-        "created_at": "2025-11-11 16:23:45",
-        "categoria": "automotriz"
-    },
-    {
-        "id": 4,
-        "device_id": "ESP32_001",
-        "sensor_type": "presion",
-        "value": 50.0,
-        "estatus": "Baja",
-        "created_at": "2025-11-11 16:24:45",
-        "categoria": "automotriz"
-    },
-    {
-        "id": 1,
-        "device_id": "ESP32_002",
-        "sensor_type": "presion",
-        "value": 70.0,
-        "estatus": "Baja",
-        "created_at": "2025-11-11 16:21:45",
-        "categoria": "domestico"
-    },
-    {
-        "id": 2,
-        "device_id": "ESP32_002",
-        "sensor_type": "presion",
-        "value": 100.0,
-        "estatus": "Baja",
-        "created_at": "2025-11-11 16:22:45",
-        "categoria": "domestico"
-    },
-    {
-        "id": 3,
-        "device_id": "ESP32_002",
-        "sensor_type": "presion",
-        "value": 167.0,
-        "estatus": "Normal",
-        "created_at": "2025-11-11 16:23:45",
-        "categoria": "domestico"
-    },
-    {
-        "id": 4,
-        "device_id": "ESP32_002",
-        "sensor_type": "presion",
-        "value": 180.5,
-        "estatus": "Normal",
-        "created_at": "2025-11-11 16:24:45",
-        "categoria": "domestico"
-    },
-    {
-        "id": 1,
-        "device_id": "ESP32_003",
-        "sensor_type": "presion",
-        "value": 70.0,
-        "estatus": "Baja",
-        "created_at": "2025-11-11 16:21:45",
-        "categoria": "industrial"
-    },
-    {
-        "id": 2,
-        "device_id": "ESP32_003",
-        "sensor_type": "presion",
-        "value": 100.0,
-        "estatus": "Baja",
-        "created_at": "2025-11-11 16:22:45",
-        "categoria": "industrial"
-    },
-    {
-        "id": 3,
-        "device_id": "ESP32_003",
-        "sensor_type": "presion",
-        "value": 167.0,
-        "estatus": "Normal",
-        "created_at": "2025-11-11 16:23:45",
-        "categoria": "industrial"
-    },
-    {
-        "id": 4,
-        "device_id": "ESP32_003",
-        "sensor_type": "presion",
-        "value": 300.7,
-        "estatus": "Alta",
-        "created_at": "2025-11-11 16:24:45",
-        "categoria": "industrial"
-    },
-    {
-        "id": 1,
-        "device_id": "ESP32_004",
-        "sensor_type": "presion",
-        "value": 70.0,
-        "estatus": "Baja",
-        "created_at": "2025-11-11 16:21:45",
-        "categoria": "refrigeracion"
-    },
-    {
-        "id": 2,
-        "device_id": "ESP32_004",
-        "sensor_type": "presion",
-        "value": 100.0,
-        "estatus": "Baja",
-        "created_at": "2025-11-11 16:22:45",
-        "categoria": "refrigeracion"
-    },
-    {
-        "id": 3,
-        "device_id": "ESP32_004",
-        "sensor_type": "presion",
-        "value": 167.0,
-        "estatus": "Normal",
-        "created_at": "2025-11-11 16:23:45",
-        "categoria": "refrigeracion"
-    },
-    {
-        "id": 4,
-        "device_id": "ESP32_004",
-        "sensor_type": "presion",
-        "value": 15.2,
-        "estatus": "Falla Baja",
-        "created_at": "2025-11-11 16:24:45",
-        "categoria": "refrigeracion"
-    }
-];
+// device.js
+let sensorData = [];
+let alertData = {};
 
-// Alertas específicas por dispositivo
-const alertData = {
-    "ESP32_001": [
-        {
-            id: 1,
-            title: "Presión Baja",
-            message: "La presión está por debajo del rango normal",
-            type: "warning",
-            time: "2025-11-11 16:21:45"
+// Función para obtener datos de la API
+async function fetchSensorData() {
+    try {
+        const response = await fetch('api.php?action=sensor_data');
+        const data = await response.json();
+        return data;
+    } catch (error) {
+        console.error('Error fetching sensor data:', error);
+        return [];
+    }
+}
+
+// Función para obtener alertas
+async function fetchAlerts() {
+    try {
+        const response = await fetch('api.php?action=alerts');
+        const data = await response.json();
+        return data;
+    } catch (error) {
+        console.error('Error fetching alerts:', error);
+        return [];
+    }
+}
+
+// Función para cargar todos los datos
+async function loadAllData() {
+    sensorData = await fetchSensorData();
+    const alerts = await fetchAlerts();
+    
+    // Convertir alertas a formato por dispositivo
+    alertData = {};
+    alerts.forEach(alert => {
+        const deviceMatch = alert.title.match(/(ESP32_\d+)/);
+        if (deviceMatch) {
+            const deviceId = deviceMatch[1];
+            if (!alertData[deviceId]) {
+                alertData[deviceId] = [];
+            }
+            alertData[deviceId].push(alert);
         }
-    ],
-    "ESP32_002": [
-        {
-            id: 1,
-            title: "Funcionamiento Normal",
-            message: "El dispositivo está operando dentro de los parámetros normales",
-            type: "info",
-            time: "2025-11-11 16:21:45"
-        }
-    ],
-    "ESP32_003": [
-        {
-            id: 1,
-            title: "Presión Alta",
-            message: "La presión está por encima del rango normal",
-            type: "warning",
-            time: "2025-11-11 16:21:45"
-        }
-    ],
-    "ESP32_004": [
-        {
-            id: 1,
-            title: "Falla Baja",
-            message: "El dispositivo ha detectado una presión anormalmente baja",
-            type: "critical",
-            time: "2025-11-11 16:21:45"
-        }
-    ]
-};
+    });
+}
 
 // Función para obtener el último registro de un dispositivo
 function getLatestDeviceData(deviceId) {
@@ -290,7 +149,9 @@ function loadCurrentDevice(deviceId) {
 }
 
 // Función para cargar los datos del dispositivo
-function loadDeviceData() {
+async function loadDeviceData() {
+    await loadAllData();
+    
     // Obtener el device_id de la URL
     const urlParams = new URLSearchParams(window.location.search);
     const deviceId = urlParams.get('device_id');
@@ -400,10 +261,28 @@ function loadDeviceData() {
 }
 
 // Función para simular actualización de datos
-function simulateDataUpdate() {
-    // En una implementación real, aquí se haría una llamada a la API
-    // Por ahora, solo volvemos a cargar los datos
-    loadDeviceData();
+async function simulateDataUpdate() {
+    await loadAllData();
+    const urlParams = new URLSearchParams(window.location.search);
+    const deviceId = urlParams.get('device_id');
+    const deviceData = getLatestDeviceData(deviceId);
+    
+    if (deviceData) {
+        updateGauge(deviceData.value);
+        
+        const statusIndicator = document.getElementById('statusIndicator');
+        const statusText = document.getElementById('statusText');
+        const statusClass = getStatusColor(deviceData.value);
+        const statusDisplayText = getStatusText(deviceData.value);
+        
+        statusIndicator.className = `status-indicator ${statusClass}`;
+        statusText.textContent = statusDisplayText;
+        
+        // Actualizar última hora de actualización
+        const now = new Date();
+        const lastUpdateElement = document.getElementById('lastUpdate');
+        lastUpdateElement.textContent = `Última actualización: ${now.toLocaleTimeString()}`;
+    }
 }
 
 // Inicializar la aplicación
