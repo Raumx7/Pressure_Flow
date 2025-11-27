@@ -85,7 +85,7 @@
     gap: 20px;
 }
 
-/* Estilos del manómetro actualizado */
+/* Estilos del manómetro actualizado para 0-200 PSI */
 .gauge-container {
     width: 250px;
     height: 250px;
@@ -97,15 +97,15 @@
     height: 100%;
     border-radius: 50%;
     background: conic-gradient(
-        #e74c3c 0deg,        /* Falla Baja: 0-25 PSI */
-        #e74c3c 15.5deg,     /* 25/580 * 360 = 15.5° */
-        #FFD900 15.5deg,     /* Baja: 25-150 PSI */
-        #FFD900 93.1deg,     /* 150/580 * 360 = 93.1° */
-        #2ecc71 93.1deg,     /* Normal: 150-250 PSI */
-        #2ecc71 155.2deg,    /* 250/580 * 360 = 155.2° */
-        #FFD900 155.2deg,    /* Alta: 250-310 PSI */
-        #FFD900 192.4deg,    /* 310/580 * 360 = 192.4° */
-        #e74c3c 192.4deg,    /* Falla Alta: 310-580 PSI */
+        #e74c3c 0deg,        /* Muy Baja: 0-100 PSI -> 0-180deg */
+        #e74c3c 180deg,      /* 100/200 * 360 = 180° */
+        #FFD900 180deg,      /* Baja: 100-135 PSI -> 180-243deg */
+        #FFD900 243deg,      /* 135/200 * 360 = 243° */
+        #2ecc71 243deg,      /* Normal: 135-165 PSI -> 243-297deg */
+        #2ecc71 297deg,      /* 165/200 * 360 = 297° */
+        #FFD900 297deg,      /* Alta: 165-180 PSI -> 297-324deg */
+        #FFD900 324deg,      /* 180/200 * 360 = 324° */
+        #e74c3c 324deg,      /* Muy Alta: 180-200 PSI -> 324-360deg */
         #e74c3c 360deg
     );
     position: relative;
@@ -181,8 +181,8 @@
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
-/* Colores del indicador de estatus según los rangos del manómetro */
-.status-falla-baja, .status-falla-alta {
+/* Colores del indicador de estatus según los nuevos rangos */
+.status-muy-baja, .status-muy-alta {
     background-color: #e74c3c !important;
 }
 

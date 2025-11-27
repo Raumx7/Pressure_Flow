@@ -124,6 +124,12 @@ tr:hover {
 }
 
 /* Estados de la tabla - SOLO color de texto, fondo transparente */
+.status-muy-baja, .status-muy-alta {
+    color: #e74c3c !important;
+    font-weight: 600;
+    background-color: transparent !important;
+}
+
 .status-baja, .status-alta {
     color: #f39c12 !important;
     font-weight: 600;
@@ -132,12 +138,6 @@ tr:hover {
 
 .status-normal {
     color: #2ecc71 !important;
-    font-weight: 600;
-    background-color: transparent !important;
-}
-
-.status-falla-baja, .status-falla-alta {
-    color: #e74c3c !important;
     font-weight: 600;
     background-color: transparent !important;
 }
@@ -152,11 +152,11 @@ tr:hover {
     background-color: #f8f9fa;
 }
 
+#pressureTableBody tr:hover .status-muy-baja,
+#pressureTableBody tr:hover .status-muy-alta,
 #pressureTableBody tr:hover .status-baja,
 #pressureTableBody tr:hover .status-alta,
-#pressureTableBody tr:hover .status-normal,
-#pressureTableBody tr:hover .status-falla-baja,
-#pressureTableBody tr:hover .status-falla-alta {
+#pressureTableBody tr:hover .status-normal {
     background-color: transparent !important;
 }
 
@@ -184,6 +184,96 @@ tr:hover {
     color: #3498db;
     position: absolute;
     left: 0;
+}
+
+/* Estilos para filtros en historial */
+.filter-display {
+    background-color: #f8f9fa;
+    padding: 10px 15px;
+    border-radius: 5px;
+    margin: 10px 0;
+    border-left: 4px solid #3498db;
+}
+
+.clear-filters-btn {
+    background: #e74c3c;
+    color: white;
+    border: none;
+    padding: 4px 8px;
+    border-radius: 3px;
+    cursor: pointer;
+    font-size: 12px;
+    margin-left: 10px;
+}
+
+.clear-filters-btn:hover {
+    background: #c0392b;
+}
+
+.filter-group {
+    margin-bottom: 15px;
+}
+
+.filter-group label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: 600;
+    color: #2c3e50;
+}
+
+.filter-group input,
+.filter-group select {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+.filter-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.btn-primary {
+    background: #3498db;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    flex: 1;
+}
+
+.btn-primary:hover {
+    background: #2980b9;
+}
+
+.btn-secondary {
+    background: #95a5a6;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    flex: 1;
+}
+
+.btn-secondary:hover {
+    background: #7f8c8d;
+}
+
+.control-btn.active {
+    background: #2ecc71;
+    color: white;
+}
+
+.table-status {
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-weight: 600;
+    font-size: 12px;
 }
 
 /* Estilos para el modal de filtros */
@@ -233,5 +323,19 @@ tr:hover {
 
     table {
         min-width: 600px;
+    }
+
+    .filter-actions {
+        flex-direction: column;
+    }
+    
+    .chart-controls {
+        flex-direction: column;
+        gap: 10px;
+    }
+    
+    .control-btn {
+        width: 100%;
+        text-align: center;
     }
 }

@@ -5,7 +5,7 @@ let alertData = {};
 // Función para obtener datos de la API
 async function fetchSensorData() {
     try {
-        const response = await fetch('api.php?action=sensor_data');
+        const response = await fetch('api/api.php?action=sensor_data');
         const data = await response.json();
         return data;
     } catch (error) {
@@ -17,7 +17,7 @@ async function fetchSensorData() {
 // Función para obtener alertas
 async function fetchAlerts() {
     try {
-        const response = await fetch('api.php?action=alerts');
+        const response = await fetch('api/api.php?action=alerts');
         const data = await response.json();
         return data;
     } catch (error) {
@@ -58,11 +58,11 @@ function getLatestDeviceData(deviceId) {
 // Función para obtener la clase CSS según el estado
 function getStatusClass(estatus) {
     const statusMap = {
+        "Muy Baja": "status-muy-baja",
         "Baja": "status-baja",
         "Normal": "status-normal",
         "Alta": "status-alta",
-        "Falla Baja": "status-falla-baja",
-        "Falla Alta": "status-falla-alta"
+        "Muy Alta": "status-muy-alta"
     };
     return statusMap[estatus] || "status-normal";
 }
@@ -89,9 +89,8 @@ function updateGauge(pressure) {
     const gaugeNeedle = document.getElementById('gaugeNeedle');
     const gaugeValue = document.getElementById('gaugeValue');
     
-    // Calcular la rotación basada en los nuevos rangos (0-580 PSI)
-    // El manómetro tiene 360 grados
-    const maxPressure = 580;
+    // Calcular la rotación basada en los nuevos rangos (0-200 PSI)
+    const maxPressure = 200;
     const rotation = (pressure / maxPressure) * 360;
     gaugeNeedle.style.transform = `translateX(-50%) rotate(${rotation}deg)`;
     gaugeValue.textContent = `${pressure} PSI`;
@@ -99,16 +98,16 @@ function updateGauge(pressure) {
 
 // Función para determinar el color del indicador de estatus basado en la presión
 function getStatusColor(pressure) {
-    if (pressure >= 0 && pressure < 25) {
-        return "status-falla-baja";
-    } else if (pressure >= 25 && pressure < 150) {
+    if (pressure >= 0 && pressure < 100) {
+        return "status-muy-baja";
+    } else if (pressure >= 100 && pressure < 135) {
         return "status-baja";
-    } else if (pressure >= 150 && pressure < 250) {
+    } else if (pressure >= 135 && pressure < 165) {
         return "status-normal";
-    } else if (pressure >= 250 && pressure < 310) {
+    } else if (pressure >= 165 && pressure < 180) {
         return "status-alta";
-    } else if (pressure >= 310 && pressure <= 580) {
-        return "status-falla-alta";
+    } else if (pressure >= 180 && pressure <= 200) {
+        return "status-muy-alta";
     } else {
         return "status-normal";
     }
@@ -116,16 +115,16 @@ function getStatusColor(pressure) {
 
 // Función para obtener el texto de estatus basado en la presión
 function getStatusText(pressure) {
-    if (pressure >= 0 && pressure < 25) {
-        return "Falla Baja";
-    } else if (pressure >= 25 && pressure < 150) {
+    if (pressure >= 0 && pressure < 100) {
+        return "Muy Baja";
+    } else if (pressure >= 100 && pressure < 135) {
         return "Baja";
-    } else if (pressure >= 150 && pressure < 250) {
+    } else if (pressure >= 135 && pressure < 165) {
         return "Normal";
-    } else if (pressure >= 250 && pressure < 310) {
+    } else if (pressure >= 165 && pressure < 180) {
         return "Alta";
-    } else if (pressure >= 310 && pressure <= 580) {
-        return "Falla Alta";
+    } else if (pressure >= 180 && pressure <= 200) {
+        return "Muy Alta";
     } else {
         return "Desconocido";
     }
@@ -318,9 +317,9 @@ document.addEventListener('DOMContentLoaded', function() {
                                     <strong>Manómetro:</strong>
                                     <p>El manómetro muestra la presión actual en PSI con colores que indican el estado:</p>
                                     <ul>
-                                        <li><span style="color: #e74c3c">● Rojo:</span> Falla (muy baja o muy alta)</li>
-                                        <li><span style="color: #FFD900">● Amarillo:</span> Presión baja o alta</li>
-                                        <li><span style="color: #2ecc71">● Verde:</span> Presión normal</li>
+                                        <li><span style="color: #e74c3c">● Rojo:</span> Presión Muy Baja o Muy Alta</li>
+                                        <li><span style="color: #FFD900">● Amarillo:</span> Presión Baja o Alta</li>
+                                        <li><span style="color: #2ecc71">● Verde:</span> Presión Normal</li>
                                     </ul>
                                 </div>
                                 
