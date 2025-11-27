@@ -16,7 +16,7 @@ let alertData = [];
 // Función para obtener datos de la API
 async function fetchSensorData() {
     try {
-        const response = await fetch('api.php?action=sensor_data');
+        const response = await fetch('api/api.php?action=sensor_data');
         const data = await response.json();
         return data;
     } catch (error) {
@@ -28,7 +28,7 @@ async function fetchSensorData() {
 // Función para obtener alertas
 async function fetchAlerts() {
     try {
-        const response = await fetch('api.php?action=alerts');
+        const response = await fetch('api/api.php?action=alerts');
         const data = await response.json();
         return data;
     } catch (error) {
