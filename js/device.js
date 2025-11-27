@@ -93,7 +93,7 @@ function updateGauge(pressure) {
     const maxPressure = 200;
     const rotation = (pressure / maxPressure) * 360;
     gaugeNeedle.style.transform = `translateX(-50%) rotate(${rotation}deg)`;
-    gaugeValue.textContent = `${pressure} PSI`;
+    gaugeValue.textContent = `${parseFloat(pressure).toFixed(2)} PSI`;
 }
 
 // Función para determinar el color del indicador de estatus basado en la presión
@@ -206,7 +206,7 @@ async function loadDeviceData() {
         </div>
         <div class="device-info-row">
             <span class="device-info-label">Última Medición:</span>
-            <span class="device-info-value">${deviceData.value} PSI</span>
+            <span class="device-info-value">${parseFloat(deviceData.value).toFixed(2)} PSI</span>
         </div>
         <div class="device-info-row">
             <span class="device-info-label">Estatus:</span>

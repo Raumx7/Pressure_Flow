@@ -38,7 +38,7 @@ function loadCurrentDevice(deviceId) {
 // Función para formatear la fecha
 function formatDate(dateString) {
     const date = new Date(dateString);
-    return `${date.getFullYear()},${(date.getMonth() + 1).toString().padStart(2, '0')},${date.getDate().toString().padStart(2, '0')}`;
+    return `${date.getFullYear()}/${(date.getMonth() + 1).toString().padStart(2, '0')}/${date.getDate().toString().padStart(2, '0')}`;
 }
 
 // Función para formatear la hora
@@ -209,7 +209,7 @@ function clearFilters() {
     applyFilters();
 }
 
-// Función para renderizar el gráfico
+// Función renderChart
 function renderChart() {
     const ctx = document.getElementById('pressureChart').getContext('2d');
     
@@ -263,12 +263,14 @@ function renderChart() {
         datasets.push({
             label: 'Línea de Tendencia',
             data: trendlineData.map(point => point.y),
-            borderColor: '#e74c3c',
-            backgroundColor: 'rgba(231, 76, 60, 0.1)',
+            borderColor: '#3498db',
+            borderWidth: 2,
+            backgroundColor: 'transparent',
             tension: 0,
             fill: false,
             borderDash: [5, 5],
-            pointRadius: 0
+            pointRadius: 0,
+            pointHoverRadius: 0
         });
     }
     
@@ -298,10 +300,14 @@ function renderChart() {
                             if (label) {
                                 label += ': ';
                             }
-                            label += context.parsed.y.toFixed(2) + ' PSI';
+                            label += parseFloat(context.parsed.y).toFixed(2) + ' PSI';
                             return label;
                         }
                     }
+                },
+                legend: {
+                    display: true,
+                    position: 'top',
                 }
             },
             scales: {
@@ -362,7 +368,7 @@ function renderTable() {
         
         row.innerHTML = `
             <td>${index + 1}</td>
-            <td>${reading.value} PSI</td>
+            <td>${parseFloat(reading.value).toFixed(2)} PSI</td>
             <td><span class="${statusClass} table-status">${reading.estatus}</span></td>
             <td>${formatDate(reading.created_at)}</td>
             <td>${formatTime(reading.created_at)}</td>

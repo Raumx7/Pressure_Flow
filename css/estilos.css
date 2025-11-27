@@ -366,8 +366,8 @@ body {
     font-weight: 600;
 }
 
-/* Asegurar que falla-baja y falla-alta siempre sean rojos */
-.status-falla-baja, .status-falla-alta {
+/* Nuevos estados de presión según los rangos 0-200 PSI */
+.status-muy-baja, .status-muy-alta {
     background-color: #e74c3c !important;
     color: white !important;
 }

@@ -1,7 +1,7 @@
 // script.js
 // Estado de la aplicación
 let currentCategory = "automotriz";
-let hiddenDevices = []; // Dispositivos ocultos
+let hiddenDevices = [];
 let categoryHiddenState = {
     automotriz: false,
     domestico: false,
@@ -48,11 +48,11 @@ async function loadAllData() {
 // Función para obtener la clase CSS según el estado
 function getStatusClass(estatus) {
     const statusMap = {
+        "Muy Baja": "status-muy-baja",
         "Baja": "status-baja",
         "Normal": "status-normal",
         "Alta": "status-alta",
-        "Falla Baja": "status-falla-baja",
-        "Falla Alta": "status-falla-alta"
+        "Muy Alta": "status-muy-alta"
     };
     return statusMap[estatus] || "status-normal";
 }
@@ -68,7 +68,7 @@ function getCategoryName(category) {
     return categoryMap[category] || category;
 }
 
-// Función para obtener el último estado de cada dispositivo (solo el de ID mayor)
+// Función para obtener el último estado de cada dispositivo
 function getLatestDeviceStatus() {
     const deviceMap = new Map();
 
@@ -88,12 +88,10 @@ function getLatestDeviceStatus() {
 // Función para filtrar dispositivos por categoría
 function filterDevicesByCategory(category) {
     if (category === "todos") {
-        // Si la categoría "todos" está oculta, no mostrar nada
         if (categoryHiddenState.todos) return [];
         return getLatestDeviceStatus().filter(device => !hiddenDevices.includes(device.device_id));
     }
 
-    // Si la categoría actual está oculta, no mostrar nada
     if (categoryHiddenState[category]) return [];
 
     return getLatestDeviceStatus().filter(device =>
@@ -131,7 +129,6 @@ function renderDevices() {
     filteredDevices.forEach(device => {
         const sensorCard = document.createElement('div');
         sensorCard.className = 'sensor-card';
-        // Añadir cursor pointer para indicar que es clickable
         sensorCard.style.cursor = 'pointer';
 
         const statusClass = getStatusClass(device.estatus);
@@ -151,13 +148,12 @@ function renderDevices() {
                     </div>
                 </div>
             </div>
-            <div class="sensor-value">${device.value}</div>
+            <div class="sensor-value">${parseFloat(device.value).toFixed(2)}</div>
             <div class="sensor-status ${statusClass}">${device.estatus}</div>
         `;
 
         // Añadir event listener para redirigir a device.html al hacer clic en la tarjeta
         sensorCard.addEventListener('click', function(e) {
-            // Evitar la redirección si se hizo clic en el menú de opciones
             if (!e.target.closest('.sensor-options')) {
                 window.location.href = `device.html?device_id=${device.device_id}`;
             }
@@ -168,20 +164,17 @@ function renderDevices() {
         const optionsTrigger = sensorCard.querySelector('.sensor-options');
 
         optionsTrigger.addEventListener('click', function(e) {
-            e.stopPropagation(); // Evitar que el clic se propague a la tarjeta (y así evitar redirección)
-            // Alternar la visibilidad del menú
+            e.stopPropagation();
             optionsMenu.style.display = optionsMenu.style.display === 'block' ? 'none' : 'block';
         });
 
-        // Cerrar el menú si se hace clic en otra parte
         document.addEventListener('click', function() {
             optionsMenu.style.display = 'none';
         });
 
-        // Manejar las opciones del menú
         sensorCard.querySelectorAll('.option-item').forEach(option => {
             option.addEventListener('click', function(e) {
-                e.stopPropagation(); // Evitar que el clic se propague a la tarjeta
+                e.stopPropagation();
                 const action = this.dataset.action;
                 const deviceId = this.dataset.deviceId;
 
@@ -191,7 +184,6 @@ function renderDevices() {
                     hideSingleDevice(deviceId);
                 }
 
-                // Ocultar el menú después de la acción
                 optionsMenu.style.display = 'none';
             });
         });
@@ -247,7 +239,7 @@ function showDeviceInfo(deviceId) {
 
     // Formatear la fecha
     const date = new Date(device.created_at);
-    const formattedDate = `${date.getFullYear()},${(date.getMonth() + 1).toString().padStart(2, '0')},${date.getDate().toString().padStart(2, '0')}`;
+    const formattedDate = `${date.getFullYear()}/${(date.getMonth() + 1).toString().padStart(2, '0')}/${date.getDate().toString().padStart(2, '0')}`;
 
     details.innerHTML = `
         <div class="info-row">
