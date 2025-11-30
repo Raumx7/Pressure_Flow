@@ -1,5 +1,7 @@
 // historial.js
-let sensorData = [];
+let allSensorData = []; // Almacena todos los datos sin filtrar
+let filteredSensorData = []; // Datos después de aplicar filtros
+let sensorData = []; // Datos paginados para mostrar
 let showTrendline = false;
 let currentFilters = {
     date: '',
@@ -12,42 +14,30 @@ let totalRecords = 0;
 // Función para obtener datos de la API con filtros
 async function fetchSensorData(deviceId = '', date = '', status = '', offset = 0) {
     try {
-        let url = `api/api.php?action=sensor_data&limit=${RECORDS_PER_PAGE}&offset=${offset}`;
-        
+        let url = `api/api.php?action=sensor_data&limit=1000`; // Obtener todos los datos primero
+
         if (deviceId) {
             url += `&device_id=${encodeURIComponent(deviceId)}`;
         }
-        
-        if (date) {
-            url += `&date=${encodeURIComponent(date)}`;
-        }
-        
-        if (status) {
-            url += `&status=${encodeURIComponent(status)}`;
-        }
-        
+
         console.log('Fetching from URL:', url);
-        
+
         const response = await fetch(url);
-        
+
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
-        
+
         const result = await response.json();
         console.log('API Response:', result);
-        
-        // CORRECCIÓN CRÍTICA: La API devuelve un array directo, no un objeto con propiedad data
+
+        // CORRECCIÓN: La API devuelve un array directo, no un objeto con propiedad data
         if (Array.isArray(result)) {
-            // Si es un array, lo usamos directamente y calculamos el total
             return {
                 data: result,
-                total: result.length,
-                limit: RECORDS_PER_PAGE,
-                offset: offset
+                total: result.length
             };
         } else {
-            // Si por alguna razón es un objeto con la estructura esperada
             return result;
         }
     } catch (error) {
@@ -56,31 +46,70 @@ async function fetchSensorData(deviceId = '', date = '', status = '', offset = 0
     }
 }
 
+// Función para aplicar filtros a los datos - CORREGIDA para zona horaria
+function applyFilters(data) {
+    let filteredData = [...data];
+
+    // Filtro por fecha - CORRECCIÓN CRÍTICA: Convertir fecha del filtro a UTC para comparar
+    if (currentFilters.date) {
+        filteredData = filteredData.filter(reading => {
+            // La fecha en la base de datos está en UTC
+            const readingDate = new Date(reading.created_at);
+
+            // Convertir la fecha del filtro (local) a UTC para comparar
+            const filterDateLocal = new Date(currentFilters.date);
+            const filterDateUTC = new Date(filterDateLocal.getTime() + filterDateLocal.getTimezoneOffset() * 60000);
+
+            // Comparar solo la parte de la fecha (sin horas)
+            const readingDateUTC = new Date(readingDate.getTime() + readingDate.getTimezoneOffset() * 60000);
+
+            const readingDateFormatted = readingDateUTC.toISOString().split('T')[0];
+            const filterDateFormatted = filterDateUTC.toISOString().split('T')[0];
+
+            return readingDateFormatted === filterDateFormatted;
+        });
+    }
+
+    // Filtro por estatus
+    if (currentFilters.status) {
+        filteredData = filteredData.filter(reading => reading.estatus === currentFilters.status);
+    }
+
+    return filteredData;
+}
+
+// Función para paginar los datos
+function paginateData(data, offset, limit) {
+    return data.slice(offset, offset + limit);
+}
+
 // Función para cargar el nombre del dispositivo actual en el sidebar
 function loadCurrentDevice(deviceId) {
     const currentDeviceBtn = document.getElementById('currentDeviceBtn');
     const currentDeviceName = document.getElementById('currentDeviceName');
-    
+
     if (currentDeviceBtn && currentDeviceName) {
         currentDeviceName.textContent = deviceId;
         currentDeviceBtn.href = `device.html?device_id=${encodeURIComponent(deviceId)}`;
     }
 }
 
-// Función para formatear la fecha
+// Función para formatear la fecha - Mantenemos mostrar fecha exacta de BD
 function formatDate(dateString) {
     try {
         const date = new Date(dateString);
+        // Mostrar la fecha exacta como está en la base de datos sin ajustes de zona horaria
         return `${date.getFullYear()}/${(date.getMonth() + 1).toString().padStart(2, '0')}/${date.getDate().toString().padStart(2, '0')}`;
     } catch (e) {
         return dateString;
     }
 }
 
-// Función para formatear la hora
+// Función para formatear la hora - Mantenemos mostrar hora exacta de BD
 function formatTime(dateString) {
     try {
         const date = new Date(dateString);
+        // Mostrar la hora exacta como está en la base de datos sin ajustes de zona horaria
         return `${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}:${date.getSeconds().toString().padStart(2, '0')}`;
     } catch (e) {
         return dateString;
@@ -102,39 +131,45 @@ function getStatusClass(estatus) {
 // Función para cargar datos y renderizar gráfico y tabla
 async function loadHistorialData() {
     console.log('Loading historial data...');
-    
+
     const urlParams = new URLSearchParams(window.location.search);
     const deviceId = urlParams.get('device_id');
-    
+
     if (!deviceId) {
         console.error('No device_id found in URL parameters');
         window.location.href = 'index.html';
         return;
     }
-    
+
     console.log('Device ID from URL:', deviceId);
-    
+
     try {
-        const response = await fetchSensorData(
-            deviceId, 
-            currentFilters.date, 
-            currentFilters.status, 
-            currentOffset
-        );
-        
-        // CORRECCIÓN: Usar response.data que ahora siempre será un array
-        sensorData = response.data || [];
-        totalRecords = response.total || 0;
-        
-        console.log('Loaded sensor data:', sensorData);
+        // Obtener todos los datos primero
+        const response = await fetchSensorData(deviceId);
+
+        // Guardar todos los datos
+        allSensorData = response.data || [];
+
+        // Aplicar filtros
+        filteredSensorData = applyFilters(allSensorData);
+
+        // Actualizar el total de registros después de filtrar
+        totalRecords = filteredSensorData.length;
+
+        // Paginar los datos
+        sensorData = paginateData(filteredSensorData, currentOffset, RECORDS_PER_PAGE);
+
+        console.log('All sensor data:', allSensorData.length);
+        console.log('Filtered sensor data:', filteredSensorData.length);
+        console.log('Paginated sensor data:', sensorData.length);
         console.log('Total records:', totalRecords);
-        
+
         loadCurrentDevice(deviceId);
         renderChart();
         renderTable();
         updatePaginationControls();
         updateFilterDisplay();
-        
+
         const now = new Date();
         const lastUpdateElement = document.getElementById('lastUpdate');
         if (lastUpdateElement) {
@@ -189,8 +224,8 @@ function calculateTrendline(data) {
 }
 
 // Función para aplicar filtros
-function applyFilters() {
-    currentOffset = 0;
+function applyFiltersToData() {
+    currentOffset = 0; // Resetear a la primera página al aplicar filtros
     loadHistorialData();
 }
 
@@ -198,23 +233,23 @@ function applyFilters() {
 function updateFilterDisplay() {
     const filterDisplay = document.getElementById('filterDisplay');
     if (!filterDisplay) return;
-    
+
     const activeFilters = [];
-    
+
     if (currentFilters.date) {
         activeFilters.push(`Fecha: ${currentFilters.date}`);
     }
-    
+
     if (currentFilters.status) {
         activeFilters.push(`Estatus: ${currentFilters.status}`);
     }
-    
+
     if (activeFilters.length > 0) {
         filterDisplay.innerHTML = `
             <strong>Filtros activos:</strong> ${activeFilters.join(', ')}
             <button id="clearFilters" class="clear-filters-btn">Limpiar filtros</button>
         `;
-        
+
         const clearBtn = document.getElementById('clearFilters');
         if (clearBtn) {
             clearBtn.addEventListener('click', clearFilters);
@@ -231,14 +266,14 @@ function clearFilters() {
         status: ''
     };
     currentOffset = 0;
-    
+
     const dateFilter = document.getElementById('filterDate');
     const statusFilter = document.getElementById('filterStatus');
-    
+
     if (dateFilter) dateFilter.value = '';
     if (statusFilter) statusFilter.value = '';
-    
-    applyFilters();
+
+    loadHistorialData();
 }
 
 // Función para actualizar controles de paginación
@@ -246,18 +281,18 @@ function updatePaginationControls() {
     const prevBtn = document.getElementById('prevPage');
     const nextBtn = document.getElementById('nextPage');
     const pageInfo = document.getElementById('pageInfo');
-    
+
     if (pageInfo) {
         const currentPage = Math.floor(currentOffset / RECORDS_PER_PAGE) + 1;
         const totalPages = Math.ceil(totalRecords / RECORDS_PER_PAGE) || 1;
         pageInfo.textContent = `Página ${currentPage} de ${totalPages}`;
     }
-    
+
     if (prevBtn) {
         prevBtn.disabled = currentOffset === 0;
         prevBtn.style.opacity = prevBtn.disabled ? '0.5' : '1';
     }
-    
+
     if (nextBtn) {
         nextBtn.disabled = (currentOffset + RECORDS_PER_PAGE) >= totalRecords;
         nextBtn.style.opacity = nextBtn.disabled ? '0.5' : '1';
@@ -271,29 +306,29 @@ function changePage(direction) {
     } else if (direction === 'next' && (currentOffset + RECORDS_PER_PAGE) < totalRecords) {
         currentOffset += RECORDS_PER_PAGE;
     }
-    
+
     loadHistorialData();
 }
 
 // Función renderChart
 function renderChart() {
     const canvas = document.getElementById('pressureChart');
-    
+
     if (!canvas) {
         console.error('Canvas element not found');
         return;
     }
-    
+
     const ctx = canvas.getContext('2d');
     const urlParams = new URLSearchParams(window.location.search);
     const deviceId = urlParams.get('device_id');
-    
-    // Usar sensorData directamente (ya es el array que necesitamos)
+
+    // Usar los datos paginados para la gráfica (máximo 15 puntos)
     let deviceData = [...sensorData];
-    
+
     // Ordenar por fecha (más antiguo primero para la gráfica)
     deviceData.sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
-    
+
     if (deviceData.length === 0) {
         console.log('No data available for chart');
         const chartContainer = document.querySelector('.chart-container');
@@ -302,25 +337,26 @@ function renderChart() {
         }
         return;
     }
-    
+
     const labels = deviceData.map(reading => {
         const date = new Date(reading.created_at);
+        // Mostrar la hora exacta de la base de datos sin ajustes de zona horaria
         return `${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}`;
     });
-    
+
     const values = deviceData.map(reading => parseFloat(reading.value));
-    
+
     // Calcular línea de tendencia y R²
     let trendlineInfo = null;
     if (showTrendline && deviceData.length > 1) {
         trendlineInfo = calculateTrendline(deviceData);
     }
-    
+
     // Destruir gráfico anterior si existe
     if (window.pressureChartInstance) {
         window.pressureChartInstance.destroy();
     }
-    
+
     const datasets = [
         {
             label: 'Presión (PSI)',
@@ -341,7 +377,7 @@ function renderChart() {
             pointHoverRadius: 6
         }
     ];
-    
+
     if (showTrendline && trendlineInfo && trendlineInfo.points.length > 0) {
         datasets.push({
             label: `Línea de Tendencia (R² = ${trendlineInfo.rSquared.toFixed(4)})`,
@@ -356,9 +392,9 @@ function renderChart() {
             pointHoverRadius: 0
         });
     }
-    
-    const chartTitle = `Historial de Presión - ${deviceId} (${deviceData.length} registros)`;
-    
+
+    const chartTitle = `Historial de Presión - ${deviceId} (Página ${Math.floor(currentOffset / RECORDS_PER_PAGE) + 1} - ${deviceData.length} registros)`;
+
     window.pressureChartInstance = new Chart(ctx, {
         type: 'line',
         data: {
@@ -431,15 +467,15 @@ function renderTable() {
         console.error('Table body element not found');
         return;
     }
-    
+
     tableBody.innerHTML = '';
 
-    // Usar sensorData directamente
+    // Usar los datos paginados para la tabla
     const deviceData = [...sensorData];
-    
+
     // Ordenar por fecha descendente (más reciente primero)
     deviceData.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
-    
+
     if (deviceData.length === 0) {
         tableBody.innerHTML = `
             <tr>
@@ -450,11 +486,11 @@ function renderTable() {
         `;
         return;
     }
-    
+
     deviceData.forEach((reading, index) => {
         const row = document.createElement('tr');
         const statusClass = getStatusClass(reading.estatus);
-        
+
         row.innerHTML = `
             <td>${index + 1}</td>
             <td>${parseFloat(reading.value).toFixed(2)} PSI</td>
@@ -462,7 +498,7 @@ function renderTable() {
             <td>${formatDate(reading.created_at)}</td>
             <td>${formatTime(reading.created_at)}</td>
         `;
-        
+
         tableBody.appendChild(row);
     });
 }
@@ -471,7 +507,7 @@ function renderTable() {
 function toggleTrendline() {
     showTrendline = !showTrendline;
     const trendlineBtn = document.getElementById('trendlineBtn');
-    
+
     if (trendlineBtn) {
         if (showTrendline) {
             trendlineBtn.innerHTML = '<i class="fas fa-chart-line"></i> Ocultar Línea de Tendencia';
@@ -480,7 +516,7 @@ function toggleTrendline() {
             trendlineBtn.innerHTML = '<i class="fas fa-chart-line"></i> Mostrar Línea de Tendencia';
             trendlineBtn.classList.remove('active');
         }
-        
+
         renderChart();
     }
 }
@@ -503,7 +539,7 @@ function showFilterModal() {
                         <label for="filterDate">Fecha específica:</label>
                         <input type="date" id="filterDate" value="${currentFilters.date}">
                     </div>
-                    
+
                     <div class="filter-group">
                         <label for="filterStatus">Estatus de presión:</label>
                         <select id="filterStatus">
@@ -515,7 +551,7 @@ function showFilterModal() {
                             <option value="Muy Alta" ${currentFilters.status === 'Muy Alta' ? 'selected' : ''}>Muy Alta</option>
                         </select>
                     </div>
-                    
+
                     <div class="filter-actions">
                         <button id="applyFilters" class="btn-primary">Aplicar Filtros</button>
                         <button id="resetFilters" class="btn-secondary">Restablecer</button>
@@ -536,7 +572,7 @@ function showFilterModal() {
         applyBtn.addEventListener('click', function() {
             currentFilters.date = document.getElementById('filterDate').value;
             currentFilters.status = document.getElementById('filterStatus').value;
-            applyFilters();
+            applyFiltersToData();
             filterModal.style.display = 'none';
         });
 
@@ -561,37 +597,37 @@ function showFilterModal() {
 // Inicializar
 document.addEventListener('DOMContentLoaded', function() {
     console.log('Historial page loaded');
-    
+
     // Cargar datos iniciales
     loadHistorialData();
-    
-    // Configurar actualización automática cada 30 segundos
-    setInterval(loadHistorialData, 30000);
-    
+
+    // Actualización cada 20 segundos
+    setInterval(loadHistorialData, 20000);
+
     // Botones de control de la gráfica
     const filterBtn = document.getElementById('filterBtn');
     const trendlineBtn = document.getElementById('trendlineBtn');
-    
+
     if (filterBtn) {
         filterBtn.addEventListener('click', showFilterModal);
     }
-    
+
     if (trendlineBtn) {
         trendlineBtn.addEventListener('click', toggleTrendline);
     }
-    
+
     // Controles de paginación
     const prevBtn = document.getElementById('prevPage');
     const nextBtn = document.getElementById('nextPage');
-    
+
     if (prevBtn) {
         prevBtn.addEventListener('click', () => changePage('prev'));
     }
-    
+
     if (nextBtn) {
         nextBtn.addEventListener('click', () => changePage('next'));
     }
-    
+
     // Botón de ayuda
     const helpBtn = document.getElementById('helpBtn');
     if (helpBtn) {
@@ -611,7 +647,7 @@ document.addEventListener('DOMContentLoaded', function() {
                             <div class="help-section">
                                 <h4>Página de Historial</h4>
                                 <p>Esta página muestra el historial de lecturas de presión del dispositivo seleccionado.</p>
-                                
+
                                 <div class="help-item">
                                     <strong>Gráfica de Presión:</strong>
                                     <p>La gráfica muestra la evolución de la presión a lo largo del tiempo. Los puntos de colores indican el estatus:</p>
@@ -621,30 +657,30 @@ document.addEventListener('DOMContentLoaded', function() {
                                         <li><span style="color: #2ecc71">● Verde:</span> Presión Normal</li>
                                     </ul>
                                 </div>
-                                
+
                                 <div class="help-item">
                                     <strong>Filtrar Datos:</strong>
                                     <p>Puedes filtrar los datos por fecha específica y estatus de presión.</p>
                                 </div>
-                                
+
                                 <div class="help-item">
                                     <strong>Línea de Tendencia:</strong>
                                     <p>La línea de tendencia muestra la dirección general de los datos para identificar patrones. El valor R² indica qué tan bien se ajusta la línea a los datos (más cercano a 1 es mejor).</p>
                                 </div>
-                                
+
                                 <div class="help-item">
                                     <strong>Navegación:</strong>
                                     <p>Usa los botones "Anterior" y "Siguiente" para navegar entre las páginas de registros.</p>
                                 </div>
-                                
+
                                 <div class="help-item">
                                     <strong>Tabla de Registros:</strong>
                                     <p>La tabla muestra las lecturas de presión con su estatus, fecha y hora exacta.</p>
                                 </div>
-                                
+
                                 <div class="help-item">
                                     <strong>Actualización Automática:</strong>
-                                    <p>Los datos se actualizan automáticamente cada 30 segundos.</p>
+                                    <p>Los datos se actualizan automáticamente cada 20 segundos.</p>
                                 </div>
                             </div>
                         </div>
