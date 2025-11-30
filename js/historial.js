@@ -1,6 +1,5 @@
 // historial.js
 let sensorData = [];
-let originalData = [];
 let showTrendline = false;
 let currentFilters = {
     date: '',
@@ -16,23 +15,41 @@ async function fetchSensorData(deviceId = '', date = '', status = '', offset = 0
         let url = `api/api.php?action=sensor_data&limit=${RECORDS_PER_PAGE}&offset=${offset}`;
         
         if (deviceId) {
-            url += `&device_id=${deviceId}`;
+            url += `&device_id=${encodeURIComponent(deviceId)}`;
         }
         
         if (date) {
-            url += `&date=${date}`;
+            url += `&date=${encodeURIComponent(date)}`;
         }
         
         if (status) {
-            url += `&status=${status}`;
+            url += `&status=${encodeURIComponent(status)}`;
         }
         
-        console.log('Fetching from URL:', url); // Debug
+        console.log('Fetching from URL:', url);
         
         const response = await fetch(url);
-        const data = await response.json();
-        console.log('API Response:', data); // Debug
-        return data;
+        
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        const result = await response.json();
+        console.log('API Response:', result);
+        
+        // CORRECCIÓN CRÍTICA: La API devuelve un array directo, no un objeto con propiedad data
+        if (Array.isArray(result)) {
+            // Si es un array, lo usamos directamente y calculamos el total
+            return {
+                data: result,
+                total: result.length,
+                limit: RECORDS_PER_PAGE,
+                offset: offset
+            };
+        } else {
+            // Si por alguna razón es un objeto con la estructura esperada
+            return result;
+        }
     } catch (error) {
         console.error('Error fetching sensor data:', error);
         return { data: [], total: 0 };
@@ -46,20 +63,28 @@ function loadCurrentDevice(deviceId) {
     
     if (currentDeviceBtn && currentDeviceName) {
         currentDeviceName.textContent = deviceId;
-        currentDeviceBtn.href = `device.html?device_id=${deviceId}`;
+        currentDeviceBtn.href = `device.html?device_id=${encodeURIComponent(deviceId)}`;
     }
 }
 
 // Función para formatear la fecha
 function formatDate(dateString) {
-    const date = new Date(dateString);
-    return `${date.getFullYear()}/${(date.getMonth() + 1).toString().padStart(2, '0')}/${date.getDate().toString().padStart(2, '0')}`;
+    try {
+        const date = new Date(dateString);
+        return `${date.getFullYear()}/${(date.getMonth() + 1).toString().padStart(2, '0')}/${date.getDate().toString().padStart(2, '0')}`;
+    } catch (e) {
+        return dateString;
+    }
 }
 
 // Función para formatear la hora
 function formatTime(dateString) {
-    const date = new Date(dateString);
-    return `${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}:${date.getSeconds().toString().padStart(2, '0')}`;
+    try {
+        const date = new Date(dateString);
+        return `${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}:${date.getSeconds().toString().padStart(2, '0')}`;
+    } catch (e) {
+        return dateString;
+    }
 }
 
 // Función para obtener la clase CSS según el estado
@@ -76,36 +101,48 @@ function getStatusClass(estatus) {
 
 // Función para cargar datos y renderizar gráfico y tabla
 async function loadHistorialData() {
+    console.log('Loading historial data...');
+    
     const urlParams = new URLSearchParams(window.location.search);
     const deviceId = urlParams.get('device_id');
     
     if (!deviceId) {
+        console.error('No device_id found in URL parameters');
         window.location.href = 'index.html';
         return;
     }
     
-    const response = await fetchSensorData(
-        deviceId, 
-        currentFilters.date, 
-        currentFilters.status, 
-        currentOffset
-    );
+    console.log('Device ID from URL:', deviceId);
     
-    sensorData = response.data;
-    totalRecords = response.total;
-    
-    console.log('Processed sensor data:', sensorData); // Debug
-    console.log('Total records:', totalRecords); // Debug
-    
-    loadCurrentDevice(deviceId);
-    renderChart();
-    renderTable();
-    updatePaginationControls();
-    updateFilterDisplay();
-    
-    const now = new Date();
-    const lastUpdateElement = document.getElementById('lastUpdate');
-    lastUpdateElement.textContent = `Última actualización: ${now.toLocaleTimeString()}`;
+    try {
+        const response = await fetchSensorData(
+            deviceId, 
+            currentFilters.date, 
+            currentFilters.status, 
+            currentOffset
+        );
+        
+        // CORRECCIÓN: Usar response.data que ahora siempre será un array
+        sensorData = response.data || [];
+        totalRecords = response.total || 0;
+        
+        console.log('Loaded sensor data:', sensorData);
+        console.log('Total records:', totalRecords);
+        
+        loadCurrentDevice(deviceId);
+        renderChart();
+        renderTable();
+        updatePaginationControls();
+        updateFilterDisplay();
+        
+        const now = new Date();
+        const lastUpdateElement = document.getElementById('lastUpdate');
+        if (lastUpdateElement) {
+            lastUpdateElement.textContent = `Última actualización: ${now.toLocaleTimeString()}`;
+        }
+    } catch (error) {
+        console.error('Error in loadHistorialData:', error);
+    }
 }
 
 // Función para calcular la línea de tendencia y R²
@@ -153,7 +190,7 @@ function calculateTrendline(data) {
 
 // Función para aplicar filtros
 function applyFilters() {
-    currentOffset = 0; // Resetear a la primera página
+    currentOffset = 0;
     loadHistorialData();
 }
 
@@ -178,7 +215,10 @@ function updateFilterDisplay() {
             <button id="clearFilters" class="clear-filters-btn">Limpiar filtros</button>
         `;
         
-        document.getElementById('clearFilters').addEventListener('click', clearFilters);
+        const clearBtn = document.getElementById('clearFilters');
+        if (clearBtn) {
+            clearBtn.addEventListener('click', clearFilters);
+        }
     } else {
         filterDisplay.innerHTML = '<em>No hay filtros activos</em>';
     }
@@ -209,16 +249,18 @@ function updatePaginationControls() {
     
     if (pageInfo) {
         const currentPage = Math.floor(currentOffset / RECORDS_PER_PAGE) + 1;
-        const totalPages = Math.ceil(totalRecords / RECORDS_PER_PAGE);
-        pageInfo.textContent = `Página ${currentPage} de ${totalPages || 1}`;
+        const totalPages = Math.ceil(totalRecords / RECORDS_PER_PAGE) || 1;
+        pageInfo.textContent = `Página ${currentPage} de ${totalPages}`;
     }
     
     if (prevBtn) {
         prevBtn.disabled = currentOffset === 0;
+        prevBtn.style.opacity = prevBtn.disabled ? '0.5' : '1';
     }
     
     if (nextBtn) {
         nextBtn.disabled = (currentOffset + RECORDS_PER_PAGE) >= totalRecords;
+        nextBtn.style.opacity = nextBtn.disabled ? '0.5' : '1';
     }
 }
 
@@ -233,19 +275,20 @@ function changePage(direction) {
     loadHistorialData();
 }
 
-// Función renderChart mejorada
+// Función renderChart
 function renderChart() {
-    const ctx = document.getElementById('pressureChart');
+    const canvas = document.getElementById('pressureChart');
     
-    if (!ctx) {
+    if (!canvas) {
         console.error('Canvas element not found');
         return;
     }
     
+    const ctx = canvas.getContext('2d');
     const urlParams = new URLSearchParams(window.location.search);
     const deviceId = urlParams.get('device_id');
     
-    // Usar todos los datos del sensor para este dispositivo
+    // Usar sensorData directamente (ya es el array que necesitamos)
     let deviceData = [...sensorData];
     
     // Ordenar por fecha (más antiguo primero para la gráfica)
@@ -253,8 +296,10 @@ function renderChart() {
     
     if (deviceData.length === 0) {
         console.log('No data available for chart');
-        // Mostrar mensaje de no datos
-        ctx.innerHTML = '<div class="no-data">No hay datos disponibles para mostrar</div>';
+        const chartContainer = document.querySelector('.chart-container');
+        if (chartContainer) {
+            chartContainer.innerHTML = '<div class="no-data" style="text-align: center; padding: 40px; color: #7f8c8d;">No hay datos disponibles para mostrar</div>';
+        }
         return;
     }
     
@@ -389,7 +434,7 @@ function renderTable() {
     
     tableBody.innerHTML = '';
 
-    // Usar todos los datos del sensor (ya filtrados por dispositivo)
+    // Usar sensorData directamente
     const deviceData = [...sensorData];
     
     // Ordenar por fecha descendente (más reciente primero)
@@ -427,15 +472,17 @@ function toggleTrendline() {
     showTrendline = !showTrendline;
     const trendlineBtn = document.getElementById('trendlineBtn');
     
-    if (showTrendline) {
-        trendlineBtn.innerHTML = '<i class="fas fa-chart-line"></i> Ocultar Línea de Tendencia';
-        trendlineBtn.classList.add('active');
-    } else {
-        trendlineBtn.innerHTML = '<i class="fas fa-chart-line"></i> Mostrar Línea de Tendencia';
-        trendlineBtn.classList.remove('active');
+    if (trendlineBtn) {
+        if (showTrendline) {
+            trendlineBtn.innerHTML = '<i class="fas fa-chart-line"></i> Ocultar Línea de Tendencia';
+            trendlineBtn.classList.add('active');
+        } else {
+            trendlineBtn.innerHTML = '<i class="fas fa-chart-line"></i> Mostrar Línea de Tendencia';
+            trendlineBtn.classList.remove('active');
+        }
+        
+        renderChart();
     }
-    
-    renderChart();
 }
 
 // Función para mostrar modal de filtros
@@ -513,10 +560,12 @@ function showFilterModal() {
 
 // Inicializar
 document.addEventListener('DOMContentLoaded', function() {
+    console.log('Historial page loaded');
+    
     // Cargar datos iniciales
     loadHistorialData();
     
-    // Configurar actualización automática
+    // Configurar actualización automática cada 30 segundos
     setInterval(loadHistorialData, 30000);
     
     // Botones de control de la gráfica
