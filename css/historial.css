@@ -306,6 +306,108 @@ tr:hover {
     margin-top: 10px;
 }
 
+/* Estilos para controles de paginación */
+.pagination-controls {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 15px;
+    margin: 20px 0;
+    padding: 15px;
+    background-color: #f8f9fa;
+    border-radius: 8px;
+}
+
+.page-info {
+    font-weight: 600;
+    color: #2c3e50;
+    min-width: 120px;
+    text-align: center;
+}
+
+.pagination-controls .control-btn:disabled {
+    background-color: #bdc3c7;
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
+.pagination-controls .control-btn:disabled:hover {
+    background-color: #bdc3c7;
+}
+
+/* Ajustes para el modal de filtros */
+.filter-group {
+    margin-bottom: 20px;
+}
+
+.filter-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: #2c3e50;
+}
+
+.filter-group input,
+.filter-group select {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-size: 14px;
+}
+
+.filter-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 25px;
+}
+
+.btn-primary {
+    background: #3498db;
+    color: white;
+    border: none;
+    padding: 12px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    flex: 1;
+    font-weight: 600;
+}
+
+.btn-primary:hover {
+    background: #2980b9;
+}
+
+.btn-secondary {
+    background: #95a5a6;
+    color: white;
+    border: none;
+    padding: 12px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    flex: 1;
+    font-weight: 600;
+}
+
+.btn-secondary:hover {
+    background: #7f8c8d;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .pagination-controls {
+        flex-direction: column;
+        gap: 10px;
+    }
+    
+    .page-info {
+        order: -1;
+    }
+    
+    .filter-actions {
+        flex-direction: column;
+    }
+}
+
 /* Responsive */
 @media (max-width: 768px) {
     .chart-controls {

@@ -252,7 +252,7 @@ function showDeviceInfo(deviceId) {
         </div>
         <div class="info-row">
             <span class="info-label">Última Medición:</span>
-            <span class="info-value">${device.value}</span>
+            <span class="info-value">${parseFloat(device.value).toFixed(2)} PSI</span>
         </div>
         <div class="info-row">
             <span class="info-label">Estatus:</span>
@@ -484,8 +484,8 @@ document.addEventListener('DOMContentLoaded', function() {
         updateHideButton();
     });
 
-    // Configurar la actualización automática cada 30 segundos
-    setInterval(simulateDataUpdate, 30000);
+    // Configurar la actualización automática cada 20 segundos
+    setInterval(simulateDataUpdate, 20000);
 
     // Manejar clics en las opciones de filtro
     const filterOptions = document.querySelectorAll('.filter-option');
