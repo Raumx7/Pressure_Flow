@@ -83,8 +83,13 @@
                 <i class="fas fa-filter"></i> Filtrar
               </button>
               <button id="trendlineBtn" class="control-btn">
-                <i class="fas fa-chart-line"></i> Ajustar Línea de Tendencia
+                <i class="fas fa-chart-line"></i> Mostrar Línea de Tendencia
               </button>
+            </div>
+
+            <!-- Mostrar filtros activos -->
+            <div id="filterDisplay" class="filter-display">
+              <em>No hay filtros activos</em>
             </div>
 
             <!-- Gráfica -->
@@ -92,7 +97,7 @@
               <canvas id="pressureChart"></canvas>
             </div>
 
-            <!-- Añadir esto después del chart-container -->
+            <!-- Controles de paginación -->
             <div class="pagination-controls">
               <button id="prevPage" class="control-btn">
                 <i class="fas fa-chevron-left"></i> Anterior
@@ -110,7 +115,7 @@
                 <table id="pressureTable">
                   <thead>
                     <tr>
-                      <th>Lectura</th>
+                      <th>#</th>
                       <th>Presión (PSI)</th>
                       <th>Estatus</th>
                       <th>Fecha</th>

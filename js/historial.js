@@ -13,7 +13,11 @@ let totalRecords = 0;
 // Función para obtener datos de la API con filtros
 async function fetchSensorData(deviceId = '', date = '', status = '', offset = 0) {
     try {
-        let url = `api/api.php?action=sensor_data&device_id=${deviceId}&limit=${RECORDS_PER_PAGE}&offset=${offset}`;
+        let url = `api/api.php?action=sensor_data&limit=${RECORDS_PER_PAGE}&offset=${offset}`;
+        
+        if (deviceId) {
+            url += `&device_id=${deviceId}`;
+        }
         
         if (date) {
             url += `&date=${date}`;
@@ -23,8 +27,11 @@ async function fetchSensorData(deviceId = '', date = '', status = '', offset = 0
             url += `&status=${status}`;
         }
         
+        console.log('Fetching from URL:', url); // Debug
+        
         const response = await fetch(url);
         const data = await response.json();
+        console.log('API Response:', data); // Debug
         return data;
     } catch (error) {
         console.error('Error fetching sensor data:', error);
@@ -86,6 +93,10 @@ async function loadHistorialData() {
     
     sensorData = response.data;
     totalRecords = response.total;
+    
+    console.log('Processed sensor data:', sensorData); // Debug
+    console.log('Total records:', totalRecords); // Debug
+    
     loadCurrentDevice(deviceId);
     renderChart();
     renderTable();
@@ -106,7 +117,7 @@ function calculateTrendline(data) {
 
     data.forEach((point, index) => {
         const x = index;
-        const y = point.value;
+        const y = parseFloat(point.value);
         sumX += x;
         sumY += y;
         sumXY += x * y;
@@ -123,7 +134,7 @@ function calculateTrendline(data) {
     let ssRes = 0;
 
     data.forEach((point, index) => {
-        const y = point.value;
+        const y = parseFloat(point.value);
         const yPred = slope * index + intercept;
         ssTot += Math.pow(y - yMean, 2);
         ssRes += Math.pow(y - yPred, 2);
@@ -199,7 +210,7 @@ function updatePaginationControls() {
     if (pageInfo) {
         const currentPage = Math.floor(currentOffset / RECORDS_PER_PAGE) + 1;
         const totalPages = Math.ceil(totalRecords / RECORDS_PER_PAGE);
-        pageInfo.textContent = `Página ${currentPage} de ${totalPages}`;
+        pageInfo.textContent = `Página ${currentPage} de ${totalPages || 1}`;
     }
     
     if (prevBtn) {
@@ -224,14 +235,28 @@ function changePage(direction) {
 
 // Función renderChart mejorada
 function renderChart() {
-    const ctx = document.getElementById('pressureChart').getContext('2d');
+    const ctx = document.getElementById('pressureChart');
+    
+    if (!ctx) {
+        console.error('Canvas element not found');
+        return;
+    }
     
     const urlParams = new URLSearchParams(window.location.search);
     const deviceId = urlParams.get('device_id');
-    let deviceData = [...sensorData].filter(reading => reading.device_id === deviceId);
+    
+    // Usar todos los datos del sensor para este dispositivo
+    let deviceData = [...sensorData];
     
     // Ordenar por fecha (más antiguo primero para la gráfica)
     deviceData.sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
+    
+    if (deviceData.length === 0) {
+        console.log('No data available for chart');
+        // Mostrar mensaje de no datos
+        ctx.innerHTML = '<div class="no-data">No hay datos disponibles para mostrar</div>';
+        return;
+    }
     
     const labels = deviceData.map(reading => {
         const date = new Date(reading.created_at);
@@ -287,7 +312,7 @@ function renderChart() {
         });
     }
     
-    const chartTitle = `Historial de Presión - ${deviceId} (${sensorData.length} registros)`;
+    const chartTitle = `Historial de Presión - ${deviceId} (${deviceData.length} registros)`;
     
     window.pressureChartInstance = new Chart(ctx, {
         type: 'line',
@@ -357,11 +382,15 @@ function renderChart() {
 // Función para renderizar la tabla
 function renderTable() {
     const tableBody = document.getElementById('pressureTableBody');
+    if (!tableBody) {
+        console.error('Table body element not found');
+        return;
+    }
+    
     tableBody.innerHTML = '';
 
-    const urlParams = new URLSearchParams(window.location.search);
-    const deviceId = urlParams.get('device_id');
-    const deviceData = [...sensorData].filter(reading => reading.device_id === deviceId);
+    // Usar todos los datos del sensor (ya filtrados por dispositivo)
+    const deviceData = [...sensorData];
     
     // Ordenar por fecha descendente (más reciente primero)
     deviceData.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
@@ -484,33 +513,6 @@ function showFilterModal() {
 
 // Inicializar
 document.addEventListener('DOMContentLoaded', function() {
-    // Crear contenedor para mostrar filtros activos
-    const chartControls = document.querySelector('.chart-controls');
-    if (chartControls) {
-        const filterDisplay = document.createElement('div');
-        filterDisplay.id = 'filterDisplay';
-        filterDisplay.className = 'filter-display';
-        filterDisplay.innerHTML = '<em>No hay filtros activos</em>';
-        chartControls.parentNode.insertBefore(filterDisplay, chartControls.nextSibling);
-    }
-    
-    // Crear controles de paginación
-    const chartContainer = document.querySelector('.chart-container');
-    if (chartContainer) {
-        const paginationControls = document.createElement('div');
-        paginationControls.className = 'pagination-controls';
-        paginationControls.innerHTML = `
-            <button id="prevPage" class="control-btn">
-                <i class="fas fa-chevron-left"></i> Anterior
-            </button>
-            <span id="pageInfo" class="page-info">Página 1 de 1</span>
-            <button id="nextPage" class="control-btn">
-                Siguiente <i class="fas fa-chevron-right"></i>
-            </button>
-        `;
-        chartContainer.parentNode.insertBefore(paginationControls, chartContainer.nextSibling);
-    }
-    
     // Cargar datos iniciales
     loadHistorialData();
     
