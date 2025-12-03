@@ -484,8 +484,8 @@ document.addEventListener('DOMContentLoaded', function() {
         updateHideButton();
     });
 
-    // Configurar la actualización automática cada 20 segundos
-    setInterval(simulateDataUpdate, 20000);
+    // Configurar la actualización automática cada 30 segundos
+    setInterval(simulateDataUpdate, 30000);
 
     // Manejar clics en las opciones de filtro
     const filterOptions = document.querySelectorAll('.filter-option');

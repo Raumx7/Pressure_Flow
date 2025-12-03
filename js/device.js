@@ -62,9 +62,11 @@ function getStatusClass(estatus) {
         "Baja": "status-baja",
         "Normal": "status-normal",
         "Alta": "status-alta",
-        "Muy Alta": "status-muy-alta"
+        "Muy Alta": "status-muy-alta",
+        "Desconocido": "status-desconocido"
     };
-    return statusMap[estatus] || "status-normal";
+
+    return statusMap[estatus] || "status-desconocido";
 }
 
 // Función para obtener el nombre de la categoría
@@ -81,7 +83,7 @@ function getCategoryName(category) {
 // Función para formatear la fecha
 function formatDate(dateString) {
     const date = new Date(dateString);
-    return `${date.getFullYear()},${(date.getMonth() + 1).toString().padStart(2, '0')},${date.getDate().toString().padStart(2, '0')}`;
+    return `${date.getFullYear()}/${(date.getMonth() + 1).toString().padStart(2, '0')}/${date.getDate().toString().padStart(2, '0')}`;
 }
 
 // Función para actualizar el manómetro
@@ -109,7 +111,7 @@ function getStatusColor(pressure) {
     } else if (pressure >= 180 && pressure <= 200) {
         return "status-muy-alta";
     } else {
-        return "status-normal";
+        return "status-desconocido";
     }
 }
 
@@ -290,7 +292,7 @@ document.addEventListener('DOMContentLoaded', function() {
     loadDeviceData();
     
     // Configurar la actualización automática cada 30 segundos
-    setInterval(simulateDataUpdate, 30000);
+    setInterval(simulateDataUpdate, 10000);
     
     // Botón de ayuda
     const helpBtn = document.getElementById('helpBtn');
