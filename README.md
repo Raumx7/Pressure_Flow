@@ -1,5 +1,6 @@
 # Pressure_Flow
 Proyecto final de moniroreo de presión en tiempo real, aquí se encuentra la estructura de cada parte del sistema IOT.
+Los archivos anteriores a excepción del readme se encuantran alojados en el directorio raíz del servidor, a continuación se muestra el código para el microcontrolador y la estructura de la base de datos.
 ## Código utilizado en el ESP32 para medir presión y mandar los datos al servidor
 ```cpp
 #include <WiFi.h>
