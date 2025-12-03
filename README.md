@@ -96,7 +96,7 @@ void sendDataToServer(float presion, String estatus) {
   http.addHeader("Authorization", "Bearer " + String(apiToken));
 
   DynamicJsonDocument doc(512);
-  doc["device_id"]  = "ESP32_001";
+  doc["device_id"]  = "ESP32_003";
   doc["sensor_type"] = "presion";
   doc["value"] = presion;
   doc["estatus"] = estatus;
@@ -220,29 +220,30 @@ Primero creamos una variable llamada TOKEN a la cual se le asigna 'esp32_' segui
 INSERT INTO api_tokens (token, description, expires_at) VALUES ('$TOKEN', 'Automated ESP32 Token', DATE_ADD(NOW(), INTERVAL 365 DAY));
 ```
 ## Inserciones sobre sensor_data
+Con estas inserciones podemos cargar datos de prueba a la tabla para que en la interfáz aparezcan dispositivos en cada categoría con datos atributos variados. El device_id y categoría que nuestro esp32 estará enviando en tiempo real será 'ESP32_003' y 'Industrial' esto lo podemos ver claramente en el código de arduino.
 ```sql
 INSERT INTO sensor_data (device_id, sensor_type, value, estatus, categoria, created_at) VALUES
 -- ESP32_001 (industrial) - 20 registros
-('ESP32_001', 'presion', 72.4, 'Muy Baja', 'industrial', '2025-11-11 16:30:10'),
-('ESP32_001', 'presion', 98.6, 'Muy Baja', 'industrial', '2025-11-11 16:30:40'),
-('ESP32_001', 'presion', 121.3, 'Baja', 'industrial', '2025-11-11 16:31:10'),
-('ESP32_001', 'presion', 133.4, 'Baja', 'industrial', '2025-11-11 16:32:00'),
-('ESP32_001', 'presion', 148.7, 'Normal', 'industrial', '2025-11-11 16:33:20'),
-('ESP32_001', 'presion', 157.9, 'Normal', 'industrial', '2025-11-11 16:34:05'),
-('ESP32_001', 'presion', 167.1, 'Alta', 'industrial', '2025-11-11 16:35:12'),
-('ESP32_001', 'presion', 172.8, 'Alta', 'industrial', '2025-11-11 16:36:40'),
-('ESP32_001', 'presion', 181.6, 'Muy Alta', 'industrial', '2025-11-11 16:37:15'),
-('ESP32_001', 'presion', 189.2, 'Muy Alta', 'industrial', '2025-11-11 16:38:05'),
-('ESP32_001', 'presion', 195.7, 'Muy Alta', 'industrial', '2025-11-11 16:39:50'),
-('ESP32_001', 'presion', 43.9, 'Muy Baja', 'industrial', '2025-11-11 16:40:25'),
-('ESP32_001', 'presion', 89.3, 'Muy Baja', 'industrial', '2025-11-11 16:41:10'),
-('ESP32_001', 'presion', 112.4, 'Baja', 'industrial', '2025-11-11 16:42:05'),
-('ESP32_001', 'presion', 139.7, 'Normal', 'industrial', '2025-11-11 16:43:00'),
-('ESP32_001', 'presion', 154.8, 'Normal', 'industrial', '2025-11-11 16:44:15'),
-('ESP32_001', 'presion', 168.3, 'Alta', 'industrial', '2025-11-11 16:45:05'),
-('ESP32_001', 'presion', 179.5, 'Alta', 'industrial', '2025-11-11 16:46:00'),
-('ESP32_001', 'presion', 188.6, 'Muy Alta', 'industrial', '2025-11-11 16:47:00'),
-('ESP32_001', 'presion', 95.1, 'Muy Baja', 'industrial', '2025-11-11 16:48:00'),
+('ESP32_001', 'presion', 72.4, 'Muy Baja', 'automotriz', '2025-11-11 16:30:10'),
+('ESP32_001', 'presion', 98.6, 'Muy Baja', 'automotriz', '2025-11-11 16:30:40'),
+('ESP32_001', 'presion', 121.3, 'Baja', 'automotriz', '2025-11-11 16:31:10'),
+('ESP32_001', 'presion', 133.4, 'Baja', 'automotriz', '2025-11-11 16:32:00'),
+('ESP32_001', 'presion', 148.7, 'Normal', 'automotriz', '2025-11-11 16:33:20'),
+('ESP32_001', 'presion', 157.9, 'Normal', 'automotriz', '2025-11-11 16:34:05'),
+('ESP32_001', 'presion', 167.1, 'Alta', 'automotriz', '2025-11-11 16:35:12'),
+('ESP32_001', 'presion', 172.8, 'Alta', 'automotriz', '2025-11-11 16:36:40'),
+('ESP32_001', 'presion', 181.6, 'Muy Alta', 'automotriz', '2025-11-11 16:37:15'),
+('ESP32_001', 'presion', 189.2, 'Muy Alta', 'automotriz', '2025-11-11 16:38:05'),
+('ESP32_001', 'presion', 195.7, 'Muy Alta', 'automotriz', '2025-11-11 16:39:50'),
+('ESP32_001', 'presion', 43.9, 'Muy Baja', 'automotriz', '2025-11-11 16:40:25'),
+('ESP32_001', 'presion', 89.3, 'Muy Baja', 'automotriz', '2025-11-11 16:41:10'),
+('ESP32_001', 'presion', 112.4, 'Baja', 'automotriz', '2025-11-11 16:42:05'),
+('ESP32_001', 'presion', 139.7, 'Normal', 'automotriz', '2025-11-11 16:43:00'),
+('ESP32_001', 'presion', 154.8, 'Normal', 'automotriz', '2025-11-11 16:44:15'),
+('ESP32_001', 'presion', 168.3, 'Alta', 'automotriz', '2025-11-11 16:45:05'),
+('ESP32_001', 'presion', 179.5, 'Alta', 'automotriz', '2025-11-11 16:46:00'),
+('ESP32_001', 'presion', 188.6, 'Muy Alta', 'automotriz', '2025-11-11 16:47:00'),
+('ESP32_001', 'presion', 95.1, 'Muy Baja', 'automotriz', '2025-11-11 16:48:00'),
 
 -- ESP32_002 (domestico) - 20 registros
 ('ESP32_002', 'presion', 55.3, 'Muy Baja', 'domestico', '2025-11-11 16:49:00'),
@@ -267,26 +268,26 @@ INSERT INTO sensor_data (device_id, sensor_type, value, estatus, categoria, crea
 ('ESP32_002', 'presion', 105.2, 'Baja', 'domestico', '2025-11-11 17:04:00'),
 
 -- ESP32_003 (automotriz) - 20 registros
-('ESP32_003', 'presion', 92.4, 'Muy Baja', 'automotriz', '2025-11-11 17:05:00'),
-('ESP32_003', 'presion', 104.3, 'Baja', 'automotriz', '2025-11-11 17:05:50'),
-('ESP32_003', 'presion', 129.9, 'Baja', 'automotriz', '2025-11-11 17:06:30'),
-('ESP32_003', 'presion', 140.2, 'Normal', 'automotriz', '2025-11-11 17:07:10'),
-('ESP32_003', 'presion', 152.7, 'Normal', 'automotriz', '2025-11-11 17:08:10'),
-('ESP32_003', 'presion', 164.1, 'Normal', 'automotriz', '2025-11-11 17:09:10'),
-('ESP32_003', 'presion', 171.5, 'Alta', 'automotriz', '2025-11-11 17:10:10'),
-('ESP32_003', 'presion', 174.2, 'Alta', 'automotriz', '2025-11-11 17:11:00'),
-('ESP32_003', 'presion', 183.7, 'Muy Alta', 'automotriz', '2025-11-11 17:11:50'),
-('ESP32_003', 'presion', 191.4, 'Muy Alta', 'automotriz', '2025-11-11 17:12:40'),
-('ESP32_003', 'presion', 197.8, 'Muy Alta', 'automotriz', '2025-11-11 17:13:30'),
-('ESP32_003', 'presion', 85.6, 'Muy Baja', 'automotriz', '2025-11-11 17:14:30'),
-('ESP32_003', 'presion', 99.4, 'Baja', 'automotriz', '2025-11-11 17:15:20'),
-('ESP32_003', 'presion', 118.8, 'Baja', 'automotriz', '2025-11-11 17:16:00'),
-('ESP32_003', 'presion', 136.5, 'Normal', 'automotriz', '2025-11-11 17:17:00'),
-('ESP32_003', 'presion', 149.2, 'Normal', 'automotriz', '2025-11-11 17:18:00'),
-('ESP32_003', 'presion', 160.4, 'Alta', 'automotriz', '2025-11-11 17:19:00'),
-('ESP32_003', 'presion', 172.9, 'Alta', 'automotriz', '2025-11-11 17:20:00'),
-('ESP32_003', 'presion', 185.7, 'Muy Alta', 'automotriz', '2025-11-11 17:21:00'),
-('ESP32_003', 'presion', 140.3, 'Normal', 'automotriz', '2025-11-11 17:22:00'),
+('ESP32_003', 'presion', 92.4, 'Muy Baja', 'industrial', '2025-11-11 17:05:00'),
+('ESP32_003', 'presion', 104.3, 'Baja', 'industrial', '2025-11-11 17:05:50'),
+('ESP32_003', 'presion', 129.9, 'Baja', 'industrial', '2025-11-11 17:06:30'),
+('ESP32_003', 'presion', 140.2, 'Normal', 'industrial', '2025-11-11 17:07:10'),
+('ESP32_003', 'presion', 152.7, 'Normal', 'industrial', '2025-11-11 17:08:10'),
+('ESP32_003', 'presion', 164.1, 'Normal', 'industrial', '2025-11-11 17:09:10'),
+('ESP32_003', 'presion', 171.5, 'Alta', 'industrial', '2025-11-11 17:10:10'),
+('ESP32_003', 'presion', 174.2, 'Alta', 'industrial', '2025-11-11 17:11:00'),
+('ESP32_003', 'presion', 183.7, 'Muy Alta', 'industrial', '2025-11-11 17:11:50'),
+('ESP32_003', 'presion', 191.4, 'Muy Alta', 'industrial', '2025-11-11 17:12:40'),
+('ESP32_003', 'presion', 197.8, 'Muy Alta', 'industrial', '2025-11-11 17:13:30'),
+('ESP32_003', 'presion', 85.6, 'Muy Baja', 'industrial', '2025-11-11 17:14:30'),
+('ESP32_003', 'presion', 99.4, 'Baja', 'industrial', '2025-11-11 17:15:20'),
+('ESP32_003', 'presion', 118.8, 'Baja', 'industrial', '2025-11-11 17:16:00'),
+('ESP32_003', 'presion', 136.5, 'Normal', 'industrial', '2025-11-11 17:17:00'),
+('ESP32_003', 'presion', 149.2, 'Normal', 'industrial', '2025-11-11 17:18:00'),
+('ESP32_003', 'presion', 160.4, 'Alta', 'industrial', '2025-11-11 17:19:00'),
+('ESP32_003', 'presion', 172.9, 'Alta', 'industrial', '2025-11-11 17:20:00'),
+('ESP32_003', 'presion', 185.7, 'Muy Alta', 'industrial', '2025-11-11 17:21:00'),
+('ESP32_003', 'presion', 140.3, 'Normal', 'industrial', '2025-11-11 17:22:00'),
 
 -- ESP32_004 (refrigeracion) - 20 registros
 ('ESP32_004', 'presion', 48.2, 'Muy Baja', 'refrigeracion', '2025-11-11 17:23:00'),
@@ -310,5 +311,3 @@ INSERT INTO sensor_data (device_id, sensor_type, value, estatus, categoria, crea
 ('ESP32_004', 'presion', 178.4, 'Alta', 'refrigeracion', '2025-11-11 17:40:00'),
 ('ESP32_004', 'presion', 160.7, 'Alta', 'refrigeracion', '2025-11-11 17:41:00');
 ```
-
-
